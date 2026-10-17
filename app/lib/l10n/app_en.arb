@@ -1,0 +1,605 @@
+{
+  "@@locale": "en",
+  "appName": "LyraMusic",
+  "navHome": "Home",
+  "navLibrary": "Library",
+  "navSearch": "Search",
+  "navPlaylists": "Playlists",
+  "navSettings": "Settings",
+  "splashTagline": "Music for everyone, everywhere.",
+  "splashPreparing": "Preparing your library…",
+  "permTitle": "Let LyraMusic find your songs",
+  "permBody": "LyraMusic needs to read the audio files saved on this phone so your albums, artists and playlists can appear here. Nothing is uploaded anywhere.",
+  "permPoint1": "Reads only audio files",
+  "permPoint1Sub": "Photos, messages and documents are never opened.",
+  "permPoint2": "Works without internet",
+  "permPoint2Sub": "Scanning and playback happen entirely on this phone.",
+  "permPoint3": "You stay in control",
+  "permPoint3Sub": "You can withdraw access at any time in the phone settings.",
+  "permAllow": "Allow music access",
+  "permLater": "Not now",
+  "permFootnote": "You can change this later in the phone settings.",
+  "permDeniedTitle": "Music access is turned off",
+  "permDeniedBody": "Without access to your audio files, your library stays empty.",
+  "permOpenSettings": "Open phone settings",
+  "scanning": "Scanning your music…",
+  "scanProgress": "{done} of {total} files",
+  "@scanProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scanResult": "{count, plural, =0{No songs found} =1{1 song in your library} other{{count} songs in your library}}",
+  "@scanResult": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanError": "The library could not be scanned.",
+  "rescan": "Rescan",
+  "scanMusic": "Scan for music",
+  "greetingMorning": "Good morning",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "homeHeadline": "{count, plural, =0{No songs yet} =1{1 song, on your device} other{{count} songs, all on your device}}",
+  "@homeHeadline": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resumePlayback": "Resume playback",
+  "timeLeft": "{time} left",
+  "@timeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recentlyAdded": "Recently added",
+  "recentlyPlayed": "Recently played",
+  "recentlyFavorited": "Recently favorited",
+  "yourPlaylists": "Your playlists",
+  "manage": "Manage",
+  "allFavorites": "All favorites",
+  "seeAll": "See all",
+  "badgeNew": "New",
+  "badgeFix": "Fix info",
+  "localLibraryFooter": "Local library · {songs}",
+  "@localLibraryFooter": {
+    "placeholders": {
+      "songs": {
+        "type": "String"
+      }
+    }
+  },
+  "shuffleAll": "Shuffle all",
+  "play": "Play",
+  "playAll": "Play all",
+  "pause": "Pause",
+  "next": "Next",
+  "previous": "Previous",
+  "shuffle": "Shuffle",
+  "shuffleOn": "Shuffle on",
+  "shuffleOff": "Shuffle off",
+  "repeatOff": "Repeat off",
+  "repeatAll": "Repeat all",
+  "repeatOne": "Repeat one",
+  "library": "Library",
+  "tabSongs": "Songs",
+  "tabArtists": "Artists",
+  "tabAlbums": "Albums",
+  "tabGenres": "Genres",
+  "tabFolders": "Folders",
+  "songsCount": "{count, plural, =1{1 song} other{{count} songs}}",
+  "@songsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "albumsCount": "{count, plural, =1{1 album} other{{count} albums}}",
+  "@albumsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownArtist": "Unknown artist",
+  "unknownAlbum": "Unknown album",
+  "unknownGenre": "Unknown genre",
+  "sortBy": "Sort by",
+  "sortTitle": "Title",
+  "sortArtist": "Artist",
+  "sortAlbum": "Album",
+  "sortDateAdded": "Recently added",
+  "incompleteBannerTitle": "{count, plural, =1{1 file has incomplete information} other{{count} files have incomplete information}}",
+  "@incompleteBannerTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "incompleteBannerText": "LyraMusic never invents missing tags. Review them whenever you like.",
+  "reviewFiles": "Review files",
+  "incompleteTitle": "Songs to complete",
+  "foldersHint": "Only folders containing audio are listed.",
+  "searchSubtitle": "Your device only",
+  "searchHint": "Songs, artists, albums, playlists",
+  "recentSearches": "Recent searches",
+  "browseBy": "Browse by",
+  "clear": "Clear",
+  "clearSearch": "Clear search",
+  "searchNoResults": "No matches for “{query}”",
+  "@searchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNoResultsText": "Check the spelling, or rescan your library if the song was added recently.",
+  "resultsCount": "{count, plural, =1{1 result} other{{count} results}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyLibraryTitle": "No music found",
+  "emptyLibraryBody": "Copy MP3, FLAC or M4A files to this phone, then rescan the library.",
+  "playlists": "Playlists",
+  "localPlaylists": "{count, plural, =0{No local playlists} =1{1 local playlist} other{{count} local playlists}}",
+  "@localPlaylists": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "favorites": "Favorites",
+  "history": "History",
+  "newPlaylist": "New playlist",
+  "playlistName": "Playlist name",
+  "create": "Create",
+  "rename": "Rename",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "change": "Change",
+  "toggleView": "Change view",
+  "deletePlaylistTitle": "Delete this playlist?",
+  "deletePlaylistBody": "“{name}” will be removed. Your music files are not deleted.",
+  "@deletePlaylistBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistCreated": "Playlist created",
+  "addedToPlaylist": "Added to {name}",
+  "@addedToPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsLocalTitle": "Playlists live on this device",
+  "playlistsLocalText": "Nothing is synced or uploaded. A song can appear more than once in the same playlist.",
+  "emptyPlaylistTitle": "This playlist is empty",
+  "emptyPlaylistBody": "Add songs to start listening.",
+  "noPlaylistsTitle": "No playlists yet",
+  "noPlaylistsBody": "Create a playlist to group the songs you love.",
+  "noFavoritesTitle": "No favorites yet",
+  "noFavoritesBody": "Tap the heart on a song to find it here.",
+  "addedToFavorites": "Added to Favorites",
+  "removedFromFavorites": "Removed from Favorites",
+  "addSongs": "Add songs",
+  "searchSongs": "Search songs",
+  "selectedCount": "{count, plural, =0{No song selected} =1{1 song selected} other{{count} songs selected}}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyToday": "Today",
+  "historyYesterday": "Yesterday",
+  "historyThisWeek": "This week",
+  "historyEarlier": "Earlier",
+  "clearHistory": "Clear history",
+  "clearHistoryTitle": "Clear listening history?",
+  "clearHistoryBody": "Your songs, favorites and playlists are not affected.",
+  "historyEmptyTitle": "No listening history yet",
+  "historyEmptyBody": "Songs you play will appear here.",
+  "playNext": "Play next",
+  "addToQueue": "Add to queue",
+  "addToPlaylist": "Add to playlist",
+  "addToFavorites": "Add to favorites",
+  "removeFromFavorites": "Remove from favorites",
+  "goToArtist": "Go to artist",
+  "goToAlbum": "Go to album",
+  "songDetails": "Song details",
+  "editTags": "Edit information",
+  "removeFromPlaylist": "Remove from playlist",
+  "willPlayNext": "Will play next",
+  "addedToQueue": "Added to queue",
+  "nowPlaying": "Now playing",
+  "fromAlbum": "from {album}",
+  "@fromAlbum": {
+    "placeholders": {
+      "album": {
+        "type": "String"
+      }
+    }
+  },
+  "queue": "Queue",
+  "playingQueue": "Playing queue",
+  "upNext": "Up next",
+  "nextUpCount": "Next up · {count}",
+  "@nextUpCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dragToReorder": "Drag to reorder",
+  "shuffleQueue": "Shuffle queue",
+  "queueCleared": "Queue cleared",
+  "queueEmpty": "The queue is empty",
+  "queueEmptyBody": "Add songs from your library, an album or a playlist to keep the music going.",
+  "openLibrary": "Open library",
+  "removeFromQueue": "Remove from queue",
+  "lyrics": "Lyrics",
+  "lyricsSynced": "Synced lyrics",
+  "lyricsUnsynced": "Not synced",
+  "lyricsStoredLocally": "Stored on device · available offline",
+  "lyricsUnavailable": "Lyrics unavailable",
+  "lyricsNoneText": "No lyrics are stored in this file, and no .lrc file with the same name was found next to it.",
+  "detailsFile": "File",
+  "detailsFormat": "Format",
+  "detailsBitrate": "Bitrate",
+  "detailsSampleRate": "Sample rate",
+  "detailsDuration": "Duration",
+  "detailsSize": "File size",
+  "detailsLocation": "Location",
+  "detailsTags": "Tags",
+  "badgeMissing": "Missing",
+  "badgeIncomplete": "Incomplete",
+  "missingInfoTitle": "Some information is missing",
+  "missingInfoText": "LyraMusic never invents tags. The file plays normally — you can complete it whenever you like.",
+  "chooseArtwork": "Choose artwork",
+  "fileOfType": "{format} file",
+  "@fileOfType": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTitle": "Title",
+  "fieldArtist": "Artist",
+  "fieldAlbum": "Album",
+  "fieldAlbumArtist": "Album artist",
+  "fieldGenre": "Genre",
+  "fieldYear": "Year",
+  "fieldTrackNumber": "Track no.",
+  "titleRequired": "The title cannot be empty",
+  "yearInvalid": "4 digits",
+  "numberInvalid": "Enter a number",
+  "notSupportedForFormat": "Not supported for this format",
+  "artwork": "Artwork",
+  "artworkEmbedded": "Embedded in the file",
+  "artworkNew": "New artwork, saved with the file",
+  "artworkChoose": "Choose from gallery",
+  "artworkRemove": "Remove artwork",
+  "artworkNone": "No artwork embedded in this file",
+  "tagsWriteInfo": "Changes are written directly into the audio file. Android will ask for your permission.",
+  "tagsSaved": "Tags written to file",
+  "tagsErrorDenied": "Permission to modify this file was refused. Nothing was changed.",
+  "tagsErrorWrite": "The file could not be modified. The original file is unchanged.",
+  "discardTitle": "Discard changes?",
+  "discardBody": "Your changes have not been saved.",
+  "discard": "Discard",
+  "keepEditing": "Keep editing",
+  "settings": "Settings",
+  "groupAppearance": "Appearance",
+  "groupLibrary": "Library",
+  "groupData": "Data",
+  "groupSystem": "System",
+  "groupAbout": "About",
+  "language": "Language",
+  "languageSystem": "Phone language",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "permissions": "Permissions",
+  "permissionGranted": "Music access granted",
+  "privacy": "Privacy",
+  "privacyValue": "No account, no tracking, no cloud",
+  "licences": "Open source licences",
+  "version": "Version",
+  "settingsFooter": "Your music never leaves this phone. No internet connection is needed.",
+  "cannotPlay": "This file cannot be played. It may have been moved or deleted.",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "appearance": "Appearance",
+  "accentColor": "Main colour",
+  "accentHint": "Used for buttons, the current song and active controls.",
+  "accentClassic": "Classic",
+  "accentSand": "Sand",
+  "accentTaupe": "Taupe",
+  "accentSage": "Sage",
+  "accentTerracotta": "Terracotta",
+  "accentOcean": "Ocean",
+  "accentMint": "Mint",
+  "accentViolet": "Violet",
+  "preview": "Preview",
+  "listenNow": "Listen now",
+  "playerLayout": "Now playing screen",
+  "playerLayoutSub": "Choose what is shown",
+  "playerLayoutHint": "Show or hide each element of the player, the queue and the mini-player.",
+  "artRounded": "Rounded",
+  "artSquare": "Square",
+  "artVinyl": "Vinyl",
+  "bgBlur": "Blurred",
+  "bgGradient": "Gradient",
+  "bgPlain": "Plain",
+  "optSwipe": "Swipe the artwork",
+  "optSwipeSub": "Left: next song · right: previous",
+  "groupInfo": "Information",
+  "optAlbumInfo": "Album and year",
+  "optFormat": "Audio format",
+  "optRemaining": "Remaining time",
+  "optRemainingSub": "Otherwise the total duration is shown",
+  "optNextUp": "Next song preview",
+  "groupControls": "Controls",
+  "optVolume": "Volume",
+  "optVolumeSub": "Same as the phone's volume buttons",
+  "optFavorite": "Favourite button",
+  "optShuffleRepeat": "Shuffle and repeat",
+  "groupActionBar": "Action bar",
+  "sleepTimer": "Sleep timer",
+  "playbackSpeed": "Playback speed",
+  "equalizer": "Equalizer",
+  "optQueueNowPlaying": "Now playing card",
+  "optQueueArtwork": "Artwork",
+  "optQueueDuration": "Durations",
+  "optQueueSwipe": "Swipe to remove",
+  "miniPlayer": "Mini-player",
+  "optMiniProgress": "Progress bar",
+  "optMiniNext": "Next button",
+  "resetLayout": "Restore defaults",
+  "resetLayoutDone": "Default layout restored",
+  "sleepTimerOff": "Sleep timer off",
+  "sleepEndOfTrack": "At the end of the song",
+  "sleepIn": "Stops in {minutes} min",
+  "@sleepIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "minutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedHint": "The pitch is kept.",
+  "eqFlat": "Flat",
+  "eqBass": "Bass",
+  "eqVocal": "Vocal",
+  "eqElectronic": "Electronic",
+  "eqClassical": "Classical",
+  "audio": "Audio",
+  "eqUnavailable": "Start playing a song to adjust the equalizer.",
+  "bassBoost": "Volume boost",
+  "eqHint": "Settings are kept and applied to every song.",
+  "groupPlayback": "Playback",
+  "on": "On",
+  "off": "Off",
+  "skipSilence": "Skip silences",
+  "skipSilenceSub": "Skips silent parts in songs",
+  "lockScreen": "Lock screen",
+  "lockScreenOption": "LyraMusic on the lock screen",
+  "lockScreenSub": "Shows the player when you lock the phone during playback",
+  "lockPermissionBody": "To show the player above the lock screen, Android needs your permission (full-screen notifications). The settings will open: turn on the option for LyraMusic, then come back.",
+  "allow": "Allow",
+  "lockPermissionMissing": "Permission needed",
+  "lockPermissionMissingSub": "Tap to open the Android settings",
+  "widgets": "Home screen widgets",
+  "widgetSmall": "Compact widget (4 × 1)",
+  "widgetSmallSub": "Song and controls · tap to add",
+  "widgetLarge": "Player widget (4 × 2)",
+  "widgetLargeSub": "Large artwork · tap to add",
+  "widgetManual": "Long-press your home screen, then Widgets › LyraMusic.",
+  "suggestions": "Suggestions",
+  "mostPlayed": "Most played",
+  "sortName": "Name",
+  "sortSongCount": "Number of songs",
+  "ascending": "Ascending",
+  "descending": "Descending",
+  "artistsCount": "{count, plural, =1{1 artist} other{{count} artists}}",
+  "@artistsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "foldersCount": "{count, plural, =1{1 folder} other{{count} folders}}",
+  "@foldersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "genresCount": "{count, plural, =1{1 genre} other{{count} genres}}",
+  "@genresCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newPlaylistSub": "Choose a name and songs",
+  "searchIntro": "Search your music",
+  "clearAll": "Clear all",
+  "back10": "Back 10 seconds",
+  "forward10": "Forward 10 seconds",
+  "optSeekButtons": "±10 s buttons",
+  "optSeekButtonsSub": "Replace shuffle and repeat next to Play (they move to the row below)",
+  "skip": "Skip",
+  "getStarted": "Get started",
+  "onb1Title": "All your music, on your phone",
+  "onb1Body": "Plays offline. No account, no streaming, no ads.",
+  "onb2Title": "Clean tags, no computer needed",
+  "onb2Body": "Fix titles, artists and covers right inside your files.",
+  "onb3Title": "Lyrics that follow the music",
+  "onb3Body": "Synced lyrics, home screen widgets and a lock screen player.",
+  "onbLyrics": "Music brings us together|A soundtrack|for every story|Music for everyone,|everywhere",
+  "auto": "Auto",
+  "edit": "Edit",
+  "hapticsLabel": "Haptics",
+  "hapticsSub": "Subtle feedback on gestures",
+  "themeDynamic": "Artwork",
+  "themeClassic": "Classic",
+  "themesGalleryHint": "Pick a mood, or create your own.",
+  "themeDynamicHint": "Colors follow the artwork of the current song.",
+  "themeCreate": "Create a theme",
+  "themeEdit": "Edit theme",
+  "themeMine": "My theme",
+  "themeSaved": "Theme saved and applied",
+  "themeSurprise": "Surprise me",
+  "themeName": "Theme name",
+  "themeColors": "Colors",
+  "themeBackground": "Background",
+  "themeText": "Text",
+  "themeContrastLow": "Low readability",
+  "themeContrastOk": "Good readability",
+  "themeContrastText": "Text contrast: {ratio}:1 (4.5 recommended)",
+  "@themeContrastText": {
+    "placeholders": {
+      "ratio": {
+        "type": "String"
+      }
+    }
+  },
+  "themeTipDark": "Tip: a very dark background saves battery on OLED screens.",
+  "themeTipLight": "Tip: a cream background is easier on the eyes than pure white.",
+  "lyricsMenu": "Lyrics…",
+  "lyricsSaved": "Lyrics saved on your device",
+  "lyricsEditTitle": "Lyrics",
+  "lyricsDelete": "Delete my lyrics",
+  "lyricsDeleted": "Lyrics deleted",
+  "paste": "Paste",
+  "lyricsHint2": "Paste or type the lyrics, one line per phrase.",
+  "linesCount": "{count, plural, =0{No lines} =1{1 line} other{{count} lines}}",
+  "@linesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncNow": "Sync",
+  "syncSaved": "Synced lyrics saved",
+  "syncReview": "Review",
+  "syncTitle": "Sync lyrics",
+  "syncProgress": "{done} / {total}",
+  "@syncProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "syncReviewHint": "Tap a line to hear it and adjust its timing.",
+  "syncHint": "Tap the button right when each line starts.",
+  "syncUndo": "Undo",
+  "syncRestart": "Start over",
+  "syncTap": "Next line",
+  "syncShiftAll": "Shift all",
+  "syncAdjustLine": "Adjust line {line}",
+  "@syncAdjustLine": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      }
+    }
+  },
+  "syncPlayAll": "Play from the start",
+  "syncListen": "Listen",
+  "workshop": "Workshop",
+  "workshopSub": "Lyrics and tags to complete",
+  "wsNoLyrics": "No lyrics",
+  "wsToSync": "To sync",
+  "wsSynced": "Synced",
+  "wsMissingInfo": "Missing info",
+  "wsAdd": "Add",
+  "wsSync": "Sync",
+  "wsEdit": "Edit",
+  "wsComplete": "Complete",
+  "wsEmptyNone": "All your songs have lyrics.",
+  "wsEmptyPlain": "Nothing to sync for now.",
+  "wsEmptySynced": "No synced lyrics yet.",
+  "wsEmptyInfo": "All tags are complete.",
+  "wsProgressTitle": "Synced lyrics",
+  "wsProgressBody": "{count, plural, =0{No contributions yet} =1{1 contribution saved on your device} other{{count} contributions saved on your device}}",
+  "@wsProgressBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsAllDone": "Library complete, well done!",
+  "wsCountNone": "{count} without lyrics",
+  "@wsCountNone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsCountPlain": "{count} to sync",
+  "@wsCountPlain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsCountInfo": "{count} to complete",
+  "@wsCountInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

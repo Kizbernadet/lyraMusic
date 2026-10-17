@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Charte LyraMusic : noir profond et crème -->
+    <color name="lyra_ink">#FF111111</color>
+    <color name="lyra_paper">#FFF3EBD8</color>
+    <color name="lyra_bg">#FFF3EBD8</color>
+    <!-- Widgets (mode clair) -->
+    <color name="widget_bg">#FFF3EBD8</color>
+    <color name="widget_art">#FFEAE1CC</color>
+    <color name="widget_text">#FF111111</color>
+    <color name="widget_text2">#FF4A4A4A</color>
+    <color name="widget_on_play">#FFF3EBD8</color>
+</resources>

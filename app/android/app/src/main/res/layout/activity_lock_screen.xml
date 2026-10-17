@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lecteur sur l'écran de verrouillage (charte : noir profond et crème) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lock_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lyra_ink"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/lock_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.55"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/lock_scrim" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="32dp"
+        android:paddingTop="40dp"
+        android:paddingEnd="32dp"
+        android:paddingBottom="28dp">
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito_black"
+            android:format12Hour="h:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="@color/lyra_paper"
+            android:textSize="64sp" />
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_medium"
+            android:format12Hour="EEEE d MMMM"
+            android:format24Hour="EEEE d MMMM"
+            android:textColor="#B3F3EBD8"
+            android:textSize="15sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/lock_art"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:elevation="12dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:src="@drawable/lock_art_placeholder" />
+
+        <TextView
+            android:id="@+id/lock_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/nunito_extrabold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textColor="@color/lyra_paper"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/lock_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="#B3F3EBD8"
+            android:textSize="15sp" />
+
+        <ProgressBar
+            android:id="@+id/lock_progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="24dp"
+            android:progressDrawable="@drawable/lock_progress" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/lock_elapsed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/inter_medium"
+                android:textColor="#99F3EBD8"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/lock_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:textColor="#99F3EBD8"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/lock_prev"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/previous"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_w_prev"
+                android:tint="@color/lyra_paper" />
+            <ImageButton
+                android:id="@+id/lock_play"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/lock_play_bg"
+                android:contentDescription="@string/play"
+                android:padding="22dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_w_play"
+                android:tint="@color/lyra_ink" />
+            <ImageButton
+                android:id="@+id/lock_next"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/next"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_w_next"
+                android:tint="@color/lyra_paper" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_stat_lyra"
+            android:tint="#80F3EBD8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/inter_medium"
+            android:text="@string/lock_hint"
+            android:textColor="#80F3EBD8"
+            android:textSize="13sp" />
+    </LinearLayout>
+</FrameLayout>

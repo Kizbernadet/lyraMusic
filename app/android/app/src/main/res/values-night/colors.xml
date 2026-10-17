@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widgets (mode sombre) -->
+    <color name="widget_bg">#FF1B1B1B</color>
+    <color name="widget_art">#FF2E2E2E</color>
+    <color name="widget_text">#FFF3EBD8</color>
+    <color name="widget_text2">#FFBDB8A9</color>
+    <color name="widget_on_play">#FF111111</color>
+    <color name="lyra_bg">#FF111111</color>
+</resources>

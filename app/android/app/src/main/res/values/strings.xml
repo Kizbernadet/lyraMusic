@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_small_name">LyraMusic · compact</string>
+    <string name="widget_small_desc">Current song and controls</string>
+    <string name="widget_large_name">LyraMusic · player</string>
+    <string name="widget_large_desc">Large artwork and controls</string>
+    <string name="widget_idle_title">LyraMusic</string>
+    <string name="widget_idle_subtitle">Tap to open your library</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="lock_channel_name">Lock screen player</string>
+    <string name="lock_hint">Swipe up to unlock</string>
+</resources>

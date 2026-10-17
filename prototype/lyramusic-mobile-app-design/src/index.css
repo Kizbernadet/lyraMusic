@@ -1,0 +1,374 @@
+@import "tailwindcss";
+
+:root {
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: #08080c;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ===========================================================
+   LYRAMUSIC DESIGN TOKENS
+   Applied on the .lyra scope so each phone frame can carry
+   its own theme while the showcase chrome stays neutral.
+   =========================================================== */
+
+.lyra {
+  /* brand */
+  --primary: #7b6cff;
+  --primary-press: #6a5af0;
+  --on-primary: #ffffff;
+  --primary-soft: rgba(123, 108, 255, 0.14);
+  --secondary: #f0a561;
+  --accent: #4fd1b5;
+
+  /* neutrals — Lyra Night (default) */
+  --bg: #0b0b11;
+  --bg-tint: #101019;
+  --surface: #14141d;
+  --surface-2: #1b1b26;
+  --elevated: #222231;
+  --text: #f4f3f8;
+  --text-2: #a3a2b4;
+  --text-3: #6e6d80;
+  --divider: rgba(255, 255, 255, 0.08);
+  --divider-strong: rgba(255, 255, 255, 0.14);
+  --overlay: rgba(6, 6, 10, 0.72);
+
+  /* semantic */
+  --success: #41c98a;
+  --warning: #e3a648;
+  --error: #f0646a;
+
+  /* shape */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 30px;
+
+  color: var(--text);
+  background: var(--bg);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.lyra[data-theme="light"] {
+  --primary: #5b4ae0;
+  --primary-press: #4d3ed0;
+  --primary-soft: rgba(91, 74, 224, 0.1);
+  --secondary: #c9793a;
+  --accent: #159b84;
+
+  --bg: #faf8f5;
+  --bg-tint: #f3f0ea;
+  --surface: #ffffff;
+  --surface-2: #f2efe9;
+  --elevated: #ffffff;
+  --text: #16151c;
+  --text-2: #64616f;
+  --text-3: #9c99a6;
+  --divider: rgba(22, 21, 28, 0.09);
+  --divider-strong: rgba(22, 21, 28, 0.16);
+  --overlay: rgba(28, 26, 36, 0.4);
+  --success: #1c9a66;
+  --warning: #b87a16;
+  --error: #d04b52;
+}
+
+.lyra[data-theme="graphite"] {
+  --primary: #9aa4b8;
+  --primary-press: #8a93a6;
+  --primary-soft: rgba(154, 164, 184, 0.14);
+  --secondary: #c8b79a;
+  --accent: #7fb8a8;
+  --bg: #0e0f11;
+  --bg-tint: #131416;
+  --surface: #17181b;
+  --surface-2: #1e2024;
+  --elevated: #24262b;
+  --text: #f0f1f3;
+  --text-2: #9fa2a9;
+}
+
+.lyra[data-theme="amber"] {
+  --primary: #e2974a;
+  --primary-press: #d2873b;
+  --primary-soft: rgba(226, 151, 74, 0.14);
+  --secondary: #8d7bff;
+  --accent: #d6c08a;
+  --bg: #100c08;
+  --bg-tint: #17110b;
+  --surface: #1a1410;
+  --surface-2: #231a13;
+  --elevated: #2b2018;
+  --text: #f7f1e8;
+  --text-2: #b6a795;
+  --text-3: #80715f;
+  --divider: rgba(255, 236, 210, 0.09);
+}
+
+.lyra[data-theme="bloom"] {
+  --primary: #e8719c;
+  --primary-press: #d8628d;
+  --primary-soft: rgba(232, 113, 156, 0.14);
+  --secondary: #8b7bf5;
+  --accent: #f0b86e;
+  --bg: #110a10;
+  --bg-tint: #180e17;
+  --surface: #1b1019;
+  --surface-2: #241622;
+  --elevated: #2d1c2a;
+  --text: #fbf0f6;
+  --text-2: #bda3b5;
+  --text-3: #8a7384;
+  --divider: rgba(255, 225, 243, 0.09);
+}
+
+/* ===========================================================
+   TYPOGRAPHY SCALE
+   =========================================================== */
+
+.t-display {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.t-h1 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.t-h2 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.t-h3 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.t-title {
+  font-size: 14.5px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.t-body {
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 450;
+}
+.t-meta {
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 450;
+}
+.t-label {
+  font-size: 10.5px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.t-button {
+  font-size: 13.5px;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+}
+.t-tech {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: -0.01em;
+}
+
+/* ===========================================================
+   UTILITIES
+   =========================================================== */
+
+.no-bar::-webkit-scrollbar {
+  display: none;
+}
+.no-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.press {
+  transition: transform 140ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 160ms ease,
+    color 160ms ease, opacity 160ms ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+.frame-shadow {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 30px 70px -20px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+.glass {
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--divider-strong);
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  margin-top: -5px;
+  border-radius: 999px;
+  background: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.range-v {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 18px;
+  height: 104px;
+}
+
+/* ===========================================================
+   MOTION
+   =========================================================== */
+
+@keyframes lyra-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes lyra-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes lyra-scrim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes lyra-pop {
+  0% {
+    transform: scale(0.82);
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lyra-bars {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes lyra-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes lyra-shimmer {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.a-fade {
+  animation: lyra-fade 280ms cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+.a-sheet {
+  animation: lyra-sheet 300ms cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+.a-scrim {
+  animation: lyra-scrim 220ms ease both;
+}
+.a-pop {
+  animation: lyra-pop 320ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.a-spin {
+  animation: lyra-spin 9s linear infinite;
+}
+.eq-bar {
+  transform-origin: bottom;
+  animation: lyra-bars 900ms ease-in-out infinite;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.07) 40%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: lyra-shimmer 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

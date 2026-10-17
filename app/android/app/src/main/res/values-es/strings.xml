@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_small_name">LyraMusic · compacto</string>
+    <string name="widget_small_desc">Canción actual y controles</string>
+    <string name="widget_large_name">LyraMusic · reproductor</string>
+    <string name="widget_large_desc">Portada grande y controles</string>
+    <string name="widget_idle_title">LyraMusic</string>
+    <string name="widget_idle_subtitle">Toca para abrir tu biblioteca</string>
+    <string name="play">Reproducir</string>
+    <string name="pause">Pausa</string>
+    <string name="previous">Anterior</string>
+    <string name="next">Siguiente</string>
+    <string name="lock_channel_name">Reproductor en la pantalla de bloqueo</string>
+    <string name="lock_hint">Desliza hacia arriba para desbloquear</string>
+</resources>

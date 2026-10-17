@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_small_name">LyraMusic · compact</string>
+    <string name="widget_small_desc">Morceau en cours et commandes</string>
+    <string name="widget_large_name">LyraMusic · lecteur</string>
+    <string name="widget_large_desc">Grande pochette et commandes</string>
+    <string name="widget_idle_title">LyraMusic</string>
+    <string name="widget_idle_subtitle">Touchez pour ouvrir votre bibliothèque</string>
+    <string name="play">Lecture</string>
+    <string name="pause">Pause</string>
+    <string name="previous">Précédent</string>
+    <string name="next">Suivant</string>
+    <string name="lock_channel_name">Lecteur sur l\'écran de verrouillage</string>
+    <string name="lock_hint">Glissez vers le haut pour déverrouiller</string>
+</resources>
