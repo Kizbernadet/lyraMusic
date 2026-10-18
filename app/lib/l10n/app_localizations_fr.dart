@@ -1363,4 +1363,129 @@ class L10nFr extends L10n {
   String wsCountInfo(int count) {
     return '$count à compléter';
   }
+
+  @override
+  String get close => 'Fermer';
+
+  @override
+  String get guideLink => 'Comment fonctionne l\'Atelier ?';
+
+  @override
+  String get guideStart => 'C\'est parti';
+
+  @override
+  String get guide1Title => 'Ajoutez des paroles';
+
+  @override
+  String get guide1Body =>
+      'Collez ou tapez le texte d\'une chanson, une ligne par phrase. Il est enregistré sur votre téléphone, sans toucher au fichier.';
+
+  @override
+  String get guide2Title => 'Synchronisez en rythme';
+
+  @override
+  String get guide2Body =>
+      'Lancez la chanson et touchez le bouton au début de chaque ligne. Ajustez ensuite au dixième de seconde près.';
+
+  @override
+  String get guide3Title => 'Créez une LyricsCard';
+
+  @override
+  String get guide3Body =>
+      'Choisissez un extrait, un fond et une police, puis enregistrez l\'image dans la galerie ou partagez-la.';
+
+  @override
+  String get wsAddLyrics => 'Ajouter des paroles';
+
+  @override
+  String get wsSyncSongs => 'Synchroniser';
+
+  @override
+  String get lcCreateShort => 'LyricsCard';
+
+  @override
+  String get lcCreate => 'Créer une LyricsCard';
+
+  @override
+  String get lcTabText => 'Texte';
+
+  @override
+  String get lcTabImage => 'Image';
+
+  @override
+  String get lcTabFont => 'Police';
+
+  @override
+  String get lcChange => 'Changer';
+
+  @override
+  String get lcPickSong => 'Chansons avec paroles';
+
+  @override
+  String get lcNoSongs => 'Aucune chanson avec paroles';
+
+  @override
+  String get lcNoSongsBody =>
+      'Ajoutez des paroles depuis l\'Atelier pour créer une carte.';
+
+  @override
+  String get lcSelectHint =>
+      'Touchez une ligne, puis une autre pour étendre. Appui long pour ajuster au caractère près.';
+
+  @override
+  String get lcClear => 'Effacer la sélection';
+
+  @override
+  String get lcTooLong => 'Extrait trop long : 113 caractères au plus';
+
+  @override
+  String get lcPlaceholder => 'Choisissez un extrait des paroles';
+
+  @override
+  String get lcContinue => 'Continuer';
+
+  @override
+  String get lcArtwork => 'Pochette';
+
+  @override
+  String get lcGallery => 'Galerie';
+
+  @override
+  String get lcDim => 'Assombrir';
+
+  @override
+  String get lcBlur => 'Flou';
+
+  @override
+  String get lcFormat => 'Format';
+
+  @override
+  String get lcSize => 'Taille';
+
+  @override
+  String get lcAlign => 'Alignement';
+
+  @override
+  String get lcColor => 'Couleur du texte';
+
+  @override
+  String get lcShowInfo => 'Titre et artiste';
+
+  @override
+  String get lcExport => 'Exporter';
+
+  @override
+  String get lcSave => 'Enregistrer dans la galerie';
+
+  @override
+  String get lcShare => 'Partager';
+
+  @override
+  String get lcSaved => 'Carte enregistrée dans la galerie';
+
+  @override
+  String get lcSaveDenied => 'Accès au stockage refusé';
+
+  @override
+  String get lcError => 'L\'export a échoué';
 }

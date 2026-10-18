@@ -1354,4 +1354,129 @@ class L10nEs extends L10n {
   String wsCountInfo(int count) {
     return '$count por completar';
   }
+
+  @override
+  String get close => 'Cerrar';
+
+  @override
+  String get guideLink => '¿Cómo funciona el Taller?';
+
+  @override
+  String get guideStart => '¡Vamos!';
+
+  @override
+  String get guide1Title => 'Añade letras';
+
+  @override
+  String get guide1Body =>
+      'Pega o escribe la letra, una línea por frase. Se guarda en tu teléfono, sin tocar el archivo.';
+
+  @override
+  String get guide2Title => 'Sincroniza al ritmo';
+
+  @override
+  String get guide2Body =>
+      'Reproduce la canción y toca el botón al empezar cada línea. Luego ajusta a la décima de segundo.';
+
+  @override
+  String get guide3Title => 'Crea una LyricsCard';
+
+  @override
+  String get guide3Body =>
+      'Elige un fragmento, un fondo y una fuente, y guarda la imagen en la galería o compártela.';
+
+  @override
+  String get wsAddLyrics => 'Añadir letras';
+
+  @override
+  String get wsSyncSongs => 'Sincronizar';
+
+  @override
+  String get lcCreateShort => 'LyricsCard';
+
+  @override
+  String get lcCreate => 'Crear una LyricsCard';
+
+  @override
+  String get lcTabText => 'Texto';
+
+  @override
+  String get lcTabImage => 'Imagen';
+
+  @override
+  String get lcTabFont => 'Fuente';
+
+  @override
+  String get lcChange => 'Cambiar';
+
+  @override
+  String get lcPickSong => 'Canciones con letra';
+
+  @override
+  String get lcNoSongs => 'Ninguna canción con letra';
+
+  @override
+  String get lcNoSongsBody =>
+      'Añade letras desde el Taller para crear una tarjeta.';
+
+  @override
+  String get lcSelectHint =>
+      'Toca una línea y luego otra para ampliar. Mantén pulsado para ajustar carácter a carácter.';
+
+  @override
+  String get lcClear => 'Borrar selección';
+
+  @override
+  String get lcTooLong => 'Demasiado largo: 113 caracteres como máximo';
+
+  @override
+  String get lcPlaceholder => 'Elige un fragmento de la letra';
+
+  @override
+  String get lcContinue => 'Continuar';
+
+  @override
+  String get lcArtwork => 'Portada';
+
+  @override
+  String get lcGallery => 'Galería';
+
+  @override
+  String get lcDim => 'Oscurecer';
+
+  @override
+  String get lcBlur => 'Desenfoque';
+
+  @override
+  String get lcFormat => 'Formato';
+
+  @override
+  String get lcSize => 'Tamaño';
+
+  @override
+  String get lcAlign => 'Alineación';
+
+  @override
+  String get lcColor => 'Color del texto';
+
+  @override
+  String get lcShowInfo => 'Título y artista';
+
+  @override
+  String get lcExport => 'Exportar';
+
+  @override
+  String get lcSave => 'Guardar en la galería';
+
+  @override
+  String get lcShare => 'Compartir';
+
+  @override
+  String get lcSaved => 'Tarjeta guardada en la galería';
+
+  @override
+  String get lcSaveDenied => 'Acceso al almacenamiento denegado';
+
+  @override
+  String get lcError => 'La exportación falló';
 }

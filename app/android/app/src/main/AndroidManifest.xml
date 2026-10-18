@@ -11,6 +11,7 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29"
         tools:ignore="ScopedStorage" />
+    <!-- Enregistrement des LyricsCards : aucune permission sur Android 10+ (MediaStore) -->
 
     <!-- Lecture en arrière-plan -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -49,6 +50,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Partage des LyricsCards -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.cards"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/card_paths" />
+        </provider>
 
         <!-- Lecteur affiche par-dessus l'ecran verrouille -->
         <activity

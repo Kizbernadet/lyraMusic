@@ -47,4 +47,6 @@ flutter {
 dependencies {
     // Session média (widgets, écran de verrouillage) — même version qu'audio_service.
     implementation("androidx.media:media:1.7.0")
+    // FileProvider (partage des LyricsCards).
+    implementation("androidx.core:core:1.13.1")
 }

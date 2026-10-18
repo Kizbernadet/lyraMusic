@@ -1346,4 +1346,128 @@ class L10nEn extends L10n {
   String wsCountInfo(int count) {
     return '$count to complete';
   }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get guideLink => 'How does the Workshop work?';
+
+  @override
+  String get guideStart => 'Let\'s go';
+
+  @override
+  String get guide1Title => 'Add lyrics';
+
+  @override
+  String get guide1Body =>
+      'Paste or type a song\'s lyrics, one line per phrase. They\'re saved on your phone, without touching the file.';
+
+  @override
+  String get guide2Title => 'Sync to the beat';
+
+  @override
+  String get guide2Body =>
+      'Play the song and tap the button as each line starts. Then fine-tune to a tenth of a second.';
+
+  @override
+  String get guide3Title => 'Create a LyricsCard';
+
+  @override
+  String get guide3Body =>
+      'Pick an excerpt, a background and a font, then save the image to your gallery or share it.';
+
+  @override
+  String get wsAddLyrics => 'Add lyrics';
+
+  @override
+  String get wsSyncSongs => 'Sync songs';
+
+  @override
+  String get lcCreateShort => 'LyricsCard';
+
+  @override
+  String get lcCreate => 'Create a LyricsCard';
+
+  @override
+  String get lcTabText => 'Text';
+
+  @override
+  String get lcTabImage => 'Image';
+
+  @override
+  String get lcTabFont => 'Font';
+
+  @override
+  String get lcChange => 'Change';
+
+  @override
+  String get lcPickSong => 'Songs with lyrics';
+
+  @override
+  String get lcNoSongs => 'No songs with lyrics';
+
+  @override
+  String get lcNoSongsBody => 'Add lyrics from the Workshop to create a card.';
+
+  @override
+  String get lcSelectHint =>
+      'Tap a line, then another to extend. Long-press to adjust character by character.';
+
+  @override
+  String get lcClear => 'Clear selection';
+
+  @override
+  String get lcTooLong => 'Too long: 113 characters max';
+
+  @override
+  String get lcPlaceholder => 'Pick an excerpt from the lyrics';
+
+  @override
+  String get lcContinue => 'Continue';
+
+  @override
+  String get lcArtwork => 'Artwork';
+
+  @override
+  String get lcGallery => 'Gallery';
+
+  @override
+  String get lcDim => 'Darken';
+
+  @override
+  String get lcBlur => 'Blur';
+
+  @override
+  String get lcFormat => 'Format';
+
+  @override
+  String get lcSize => 'Size';
+
+  @override
+  String get lcAlign => 'Alignment';
+
+  @override
+  String get lcColor => 'Text color';
+
+  @override
+  String get lcShowInfo => 'Title and artist';
+
+  @override
+  String get lcExport => 'Export';
+
+  @override
+  String get lcSave => 'Save to gallery';
+
+  @override
+  String get lcShare => 'Share';
+
+  @override
+  String get lcSaved => 'Card saved to your gallery';
+
+  @override
+  String get lcSaveDenied => 'Storage access denied';
+
+  @override
+  String get lcError => 'Export failed';
 }

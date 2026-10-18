@@ -26,7 +26,8 @@ Uint8List flacNoTags() {
   si.setUint16(2, 4096);
   // 44100 Hz (20 bits) | 2 canaux - 1 (3 bits) | 16 bits - 1 (5 bits) | 36 bits d'échantillons
   final sampleRate = 44100, channels = 2, bps = 16, total = 44100;
-  final packed = (BigInt.from(sampleRate) << 44) |
+  final packed =
+      (BigInt.from(sampleRate) << 44) |
       (BigInt.from(channels - 1) << 41) |
       (BigInt.from(bps - 1) << 36) |
       BigInt.from(total);
@@ -67,6 +68,7 @@ Uint8List m4aNoTags() {
     final mdat = _box('mdat', [...audioMarker.codeUnits, ...Uint8List(1000)]);
     return Uint8List.fromList([...ftyp, ...moov, ...mdat]);
   }
+
   final probe = build(0);
   // Position des données audio = taille totale - contenu de mdat.
   final offset = probe.length - (audioMarker.length + 1000);
@@ -83,11 +85,76 @@ String chunkAt(Uint8List data) {
 
 // Petite image PNG 1x1 valide.
 final png = Uint8List.fromList([
-  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
-  0x89, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0xF8, 0xCF, 0xC0, 0xF0,
-  0x1F, 0x00, 0x05, 0x00, 0x01, 0xFF, 0x89, 0x99, 0x3D, 0x1D, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
-  0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x63,
+  0xF8,
+  0xCF,
+  0xC0,
+  0xF0,
+  0x1F,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0xFF,
+  0x89,
+  0x99,
+  0x3D,
+  0x1D,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
 ]);
 
 Uint8List _frame23(String id, List<int> body) {
@@ -111,7 +178,18 @@ Uint8List mp3WithLyrics(String lyrics) {
 void main() {
   late Directory dir;
   setUp(() => dir = Directory.systemTemp.createTempSync('lyra_test'));
-  tearDown(() => dir.deleteSync(recursive: true));
+  // Sous Windows, un fichier peut rester brièvement verrouillé (antivirus, indexation) :
+  // le nettoyage ne doit pas faire échouer le test.
+  tearDown(() async {
+    for (var i = 0; i < 5; i++) {
+      try {
+        if (dir.existsSync()) dir.deleteSync(recursive: true);
+        return;
+      } on FileSystemException {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    }
+  });
 
   const edit = TagEdit(
     title: 'Été indien',
@@ -125,11 +203,7 @@ void main() {
     artBytes: null,
   );
 
-  final cases = {
-    'mp3': mp3NoTags,
-    'flac': flacNoTags,
-    'm4a': m4aNoTags,
-  };
+  final cases = {'mp3': mp3NoTags, 'flac': flacNoTags, 'm4a': m4aNoTags};
 
   test('mp3 : les paroles et commentaires sont conservés après modification', () {
     const lrc = '[00:01.00]Hello\n[00:02.00]World';
@@ -178,7 +252,10 @@ void main() {
 
       test('une deuxième modification remplace la première et retire la pochette', () {
         final file = File('${dir.path}/song.${entry.key}')..writeAsBytesSync(entry.value());
-        applyEdit(file.path, TagEdit(title: 'Premier', artist: 'A', artChanged: true, artBytes: png, artMime: 'image/png'));
+        applyEdit(
+          file.path,
+          TagEdit(title: 'Premier', artist: 'A', artChanged: true, artBytes: png, artMime: 'image/png'),
+        );
         applyEdit(file.path, const TagEdit(title: 'Second', artist: null, genre: null, artChanged: true));
         final m = readMetadata(file, getImage: true);
         expect(m.title, 'Second');

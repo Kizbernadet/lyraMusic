@@ -21,6 +21,7 @@ import '../widgets/track_tile.dart';
 import 'details_screen.dart';
 import 'equalizer_screen.dart';
 import 'home_screen.dart';
+import 'lyrics_card_screen.dart';
 import 'lyrics_editor_screen.dart';
 import 'lyrics_sync_screen.dart';
 import 'queue_screen.dart';
@@ -74,9 +75,16 @@ class _PlayerScreenState extends State<PlayerScreen> with SingleTickerProviderSt
 
   // Glisser vers le bas pour fermer (comme une feuille iOS).
   double _drag = 0;
-  late final AnimationController _back = AnimationController(vsync: this, duration: const Duration(milliseconds: 280))
-    ..addListener(() => setState(() => _drag = _backFrom * (1 - Curves.easeOutCubic.transform(_back.value))));
+  late final AnimationController _back;
   double _backFrom = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Créé ici et non à la demande : sinon le premier accès pourrait avoir lieu dans dispose().
+    _back = AnimationController(vsync: this, duration: const Duration(milliseconds: 280))
+      ..addListener(() => setState(() => _drag = _backFrom * (1 - Curves.easeOutCubic.transform(_back.value))));
+  }
 
   @override
   void dispose() {
@@ -363,7 +371,7 @@ class _PlayerBody extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: LyricsCard(key: ValueKey('${track.id}-${context.watch<LyricsStore>().version}'), track: track),
+              child: LyricsPanel(key: ValueKey('${track.id}-${context.watch<LyricsStore>().version}'), track: track),
             ),
           ),
         ],
@@ -1009,29 +1017,56 @@ class _NextUp extends StatelessWidget {
   }
 }
 
-/// Carte des paroles : lignes déjà chantées dans la couleur principale,
-/// ligne en cours mise en avant, défilement automatique, appui pour s'y rendre.
-class LyricsCard extends StatefulWidget {
-  final Track track;
-  const LyricsCard({super.key, required this.track});
-
-  @override
-  State<LyricsCard> createState() => _LyricsCardState();
+/// Couleur de la ligne en cours : jaune par défaut ; la couleur du thème si elle
+/// n'est pas blanche (ou presque). Sur fond clair, un jaune plus profond reste lisible.
+Color lyricsHighlight(LyraColors c) {
+  final hsl = HSLColor.fromColor(c.primary);
+  final whiteish = hsl.lightness > 0.86 || (hsl.saturation < 0.25 && hsl.lightness > 0.75);
+  if (!whiteish) return c.primary;
+  final light = c.bg.computeLuminance() > 0.5;
+  return light ? const Color(0xFFB98500) : const Color(0xFFFFD43B);
 }
 
-class _LyricsCardState extends State<LyricsCard> {
+/// Panneau des paroles. Ligne en cours agrandie (taille de police animée) et colorée,
+/// lignes voisines atténuées selon leur distance, défilement automatique et doux.
+/// Si l'utilisateur fait défiler lui-même, le suivi reprend après quelques secondes.
+/// Toucher une ligne synchronisée y amène la lecture.
+class LyricsPanel extends StatefulWidget {
+  final Track track;
+  const LyricsPanel({super.key, required this.track});
+
+  @override
+  State<LyricsPanel> createState() => _LyricsPanelState();
+}
+
+class _LyricsPanelState extends State<LyricsPanel> {
   late final Future<Lyrics?> _future = context.read<LyricsStore>().lyricsFor(widget.track);
   final List<GlobalKey> _keys = [];
+  Stream<int>? _index;
   int _current = -2;
+  DateTime _userScroll = DateTime.fromMillisecondsSinceEpoch(0);
 
-  void _follow(int index) {
-    if (index == _current) return;
+  /// Index de la ligne en cours ; n'émet que lorsqu'il change (pas à chaque tic de position).
+  Stream<int> _indexStream(Lyrics lyrics) => _index ??= context.audio.player
+      .createPositionStream(minPeriod: const Duration(milliseconds: 80), maxPeriod: const Duration(milliseconds: 200))
+      // Petite avance : la ligne s'allume au moment où elle est chantée.
+      .map((p) => lyrics.indexAt(p + const Duration(milliseconds: 250)))
+      .distinct();
+
+  void _follow(int index, {bool force = false}) {
+    if (index == _current && !force) return;
     _current = index;
     if (index < 0 || index >= _keys.length) return;
+    if (!force && DateTime.now().difference(_userScroll).inMilliseconds < 3500) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = _keys[index].currentContext;
       if (ctx != null) {
-        Scrollable.ensureVisible(ctx, alignment: 0.35, duration: const Duration(milliseconds: 450), curve: lyraCurve);
+        Scrollable.ensureVisible(
+          ctx,
+          alignment: 0.38,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutCubic,
+        );
       }
     });
   }
@@ -1067,7 +1102,7 @@ class _LyricsCardState extends State<LyricsCard> {
               ),
             );
           }
-          final big = TextStyle(fontFamily: LyraText.heading, fontSize: 20, height: 1.45, fontWeight: FontWeight.w800);
+          final big = TextStyle(fontFamily: LyraText.heading, fontSize: 20, height: 1.4, fontWeight: FontWeight.w800);
           if (!lyrics.synced) {
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
@@ -1082,40 +1117,89 @@ class _LyricsCardState extends State<LyricsCard> {
             _keys.add(GlobalKey());
           }
           final audio = context.audio;
-          return StreamBuilder<Duration>(
-            stream: audio.player.positionStream,
-            builder: (context, pos) {
-              // Petite avance : la ligne s'allume au moment où elle est chantée.
-              final index = lyrics.indexAt((pos.data ?? Duration.zero) + const Duration(milliseconds: 250));
-              _follow(index);
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < lyrics.lines.length; i++)
-                      InkWell(
-                        key: _keys[i],
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () => audio.seek(lyrics.lines[i].time!),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 250),
-                            style: big.copyWith(
-                              fontSize: i == index ? 22 : 20,
-                              color: i <= index ? c.primary : c.text.withValues(alpha: 0.85),
-                            ),
-                            child: Text(lyrics.lines[i].text.isEmpty ? '♪' : lyrics.lines[i].text),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
+          final hi = lyricsHighlight(c);
+          return NotificationListener<ScrollStartNotification>(
+            onNotification: (n) {
+              if (n.dragDetails != null) _userScroll = DateTime.now();
+              return false;
             },
+            child: StreamBuilder<int>(
+              stream: _indexStream(lyrics),
+              initialData: lyrics.indexAt(audio.player.position + const Duration(milliseconds: 250)),
+              builder: (context, snap) {
+                final index = snap.data ?? -1;
+                _follow(index);
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 160),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var i = 0; i < lyrics.lines.length; i++)
+                        _LyricLineView(
+                          key: _keys[i],
+                          text: lyrics.lines[i].text,
+                          distance: index < 0 ? 99 : i - index,
+                          base: big,
+                          highlight: hi,
+                          color: c.text,
+                          onTap: () {
+                            _userScroll = DateTime.fromMillisecondsSinceEpoch(0);
+                            audio.seek(lyrics.lines[i].time!);
+                          },
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _LyricLineView extends StatelessWidget {
+  final String text;
+  final int distance; // 0 = ligne en cours, négatif = déjà chantée
+  final TextStyle base;
+  final Color highlight;
+  final Color color;
+  final VoidCallback onTap;
+  const _LyricLineView({
+    super.key,
+    required this.text,
+    required this.distance,
+    required this.base,
+    required this.highlight,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final active = distance == 0;
+    final d = distance.abs();
+    // Lignes déjà chantées plus discrètes que celles à venir.
+    final alpha = active ? 1.0 : (distance < 0 ? 0.32 : (d == 1 ? 0.62 : (d == 2 ? 0.48 : 0.38)));
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 380),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(vertical: active ? 7 : 3),
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 380),
+          curve: Curves.easeOutCubic,
+          style: base.copyWith(
+            fontSize: active ? 27 : 20,
+            height: active ? 1.25 : 1.4,
+            color: active ? highlight : color.withValues(alpha: alpha),
+            shadows: active ? [Shadow(color: highlight.withValues(alpha: 0.35), blurRadius: 18)] : const [],
+          ),
+          child: Text(text.isEmpty ? '♪' : text),
+        ),
       ),
     );
   }
@@ -1132,7 +1216,7 @@ class LyricsActions extends StatelessWidget {
     final status = context.watch<LyricsStore>().status(track);
     void edit() => context.pushFull(LyricsEditorScreen(trackId: track.id));
     void sync() => context.pushFull(LyricsSyncScreen(trackId: track.id));
-    return switch (status) {
+    final main = switch (status) {
       LyricsStatus.none => LyraButton(label: l.wsAdd, icon: Icons.add_rounded, small: true, onPressed: edit),
       LyricsStatus.plain => LyraButton(label: l.wsSync, icon: Icons.timer_outlined, small: true, onPressed: sync),
       LyricsStatus.synced => PopupMenuButton<int>(
@@ -1145,5 +1229,18 @@ class LyricsActions extends StatelessWidget {
         ],
       ),
     };
+    if (status == LyricsStatus.none) return main;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        LyraIconButton(
+          icon: Icons.style_rounded,
+          tooltip: l.lcCreate,
+          color: context.c.text2,
+          onPressed: () => context.pushFull(LyricsCardScreen(trackId: track.id)),
+        ),
+        main,
+      ],
+    );
   }
 }

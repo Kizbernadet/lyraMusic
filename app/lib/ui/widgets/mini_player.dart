@@ -23,8 +23,15 @@ class MiniPlayer extends StatefulWidget {
 class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateMixin {
   double _dx = 0;
   double _from = 0;
-  late final AnimationController _back = AnimationController(vsync: this, duration: const Duration(milliseconds: 260))
-    ..addListener(() => setState(() => _dx = _from * (1 - Curves.easeOutCubic.transform(_back.value))));
+  late final AnimationController _back;
+
+  @override
+  void initState() {
+    super.initState();
+    // Créé ici et non à la demande : sinon le premier accès pourrait avoir lieu dans dispose().
+    _back = AnimationController(vsync: this, duration: const Duration(milliseconds: 260))
+      ..addListener(() => setState(() => _dx = _from * (1 - Curves.easeOutCubic.transform(_back.value))));
+  }
 
   @override
   void dispose() {

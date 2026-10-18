@@ -10,9 +10,11 @@ import '../widgets/common.dart';
 import '../widgets/kit.dart';
 import '../widgets/library_widgets.dart';
 import '../widgets/track_tile.dart';
+import 'lyrics_card_screen.dart';
 import 'lyrics_editor_screen.dart';
 import 'lyrics_sync_screen.dart';
 import 'tag_editor_screen.dart';
+import 'workshop_guide.dart';
 
 /// Atelier : les morceaux à compléter, pour les passionnés.
 /// Sans paroles · À synchroniser · Synchronisées · Infos manquantes.
@@ -27,6 +29,21 @@ class WorkshopScreen extends StatefulWidget {
 
 class _WorkshopScreenState extends State<WorkshopScreen> {
   late int _tab = widget.initialTab;
+
+  @override
+  void initState() {
+    super.initState();
+    // Première visite : le parcours explicatif s'ouvre tout seul.
+    final settings = context.settings;
+    if (!settings.workshopGuideSeen) {
+      settings.setWorkshopGuideSeen();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openGuide();
+      });
+    }
+  }
+
+  void _openGuide() => context.pushFull(const WorkshopGuide());
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +92,35 @@ class _WorkshopScreenState extends State<WorkshopScreen> {
       appBar: LyraAppBar(title: l.workshop, subtitle: l.workshopSub),
       body: Column(
         children: [
+          // Les trois outils de l'Atelier, qui apparaissent en cascade.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 2, 20, 10),
+            child: Row(
+              children: [
+                for (final (i, (icon, label, onTap)) in [
+                  (Icons.edit_note_rounded, l.wsAddLyrics, () => setState(() => _tab = 0)),
+                  (Icons.timer_outlined, l.wsSyncSongs, () => setState(() => _tab = 1)),
+                  (Icons.style_rounded, l.lcCreateShort, () => context.pushFull(const LyricsCardScreen())),
+                ].indexed) ...[
+                  if (i > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: _HubTile(order: i, icon: icon, label: label, highlight: i == 2, onTap: onTap),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _openGuide,
+                icon: Icon(Icons.play_circle_outline_rounded, size: 19, color: c.primary),
+                label: Text(l.guideLink, style: context.t.title.copyWith(color: c.primary, fontSize: 13.5)),
+              ),
+            ),
+          ),
           // Progression globale : part de la bibliothèque avec paroles synchronisées.
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
@@ -150,6 +196,63 @@ class _WorkshopScreenState extends State<WorkshopScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Tuile d'action de l'Atelier : entrée décalée selon [order], léger rebond.
+class _HubTile extends StatelessWidget {
+  final int order;
+  final IconData icon;
+  final String label;
+  final bool highlight;
+  final VoidCallback onTap;
+  const _HubTile({
+    required this.order,
+    required this.icon,
+    required this.label,
+    required this.highlight,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final fg = highlight ? c.onPrimary : c.text;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 520 + order * 140),
+      curve: Interval(order * 0.2, 1, curve: Curves.easeOutBack),
+      builder: (_, v, child) => Opacity(
+        opacity: v.clamp(0.0, 1.0),
+        child: Transform.translate(offset: Offset(0, 24 * (1 - v)), child: child),
+      ),
+      child: Press(
+        onTap: () {
+          Haptics.tap();
+          onTap();
+        },
+        child: Container(
+          height: 92,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: highlight ? c.primary : c.surface,
+            borderRadius: BorderRadius.circular(radiusL),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: fg, size: 24),
+              const Spacer(),
+              Text(
+                label,
+                maxLines: 2,
+                style: context.t.title.copyWith(fontSize: 13, fontWeight: FontWeight.w800, color: fg, height: 1.15),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

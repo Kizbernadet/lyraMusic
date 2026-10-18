@@ -2414,6 +2414,246 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'{count} to complete'**
   String wsCountInfo(int count);
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @guideLink.
+  ///
+  /// In en, this message translates to:
+  /// **'How does the Workshop work?'**
+  String get guideLink;
+
+  /// No description provided for @guideStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get guideStart;
+
+  /// No description provided for @guide1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add lyrics'**
+  String get guide1Title;
+
+  /// No description provided for @guide1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste or type a song\'s lyrics, one line per phrase. They\'re saved on your phone, without touching the file.'**
+  String get guide1Body;
+
+  /// No description provided for @guide2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync to the beat'**
+  String get guide2Title;
+
+  /// No description provided for @guide2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Play the song and tap the button as each line starts. Then fine-tune to a tenth of a second.'**
+  String get guide2Body;
+
+  /// No description provided for @guide3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a LyricsCard'**
+  String get guide3Title;
+
+  /// No description provided for @guide3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an excerpt, a background and a font, then save the image to your gallery or share it.'**
+  String get guide3Body;
+
+  /// No description provided for @wsAddLyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Add lyrics'**
+  String get wsAddLyrics;
+
+  /// No description provided for @wsSyncSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync songs'**
+  String get wsSyncSongs;
+
+  /// No description provided for @lcCreateShort.
+  ///
+  /// In en, this message translates to:
+  /// **'LyricsCard'**
+  String get lcCreateShort;
+
+  /// No description provided for @lcCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a LyricsCard'**
+  String get lcCreate;
+
+  /// No description provided for @lcTabText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get lcTabText;
+
+  /// No description provided for @lcTabImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get lcTabImage;
+
+  /// No description provided for @lcTabFont.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get lcTabFont;
+
+  /// No description provided for @lcChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get lcChange;
+
+  /// No description provided for @lcPickSong.
+  ///
+  /// In en, this message translates to:
+  /// **'Songs with lyrics'**
+  String get lcPickSong;
+
+  /// No description provided for @lcNoSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'No songs with lyrics'**
+  String get lcNoSongs;
+
+  /// No description provided for @lcNoSongsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add lyrics from the Workshop to create a card.'**
+  String get lcNoSongsBody;
+
+  /// No description provided for @lcSelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a line, then another to extend. Long-press to adjust character by character.'**
+  String get lcSelectHint;
+
+  /// No description provided for @lcClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get lcClear;
+
+  /// No description provided for @lcTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Too long: 113 characters max'**
+  String get lcTooLong;
+
+  /// No description provided for @lcPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an excerpt from the lyrics'**
+  String get lcPlaceholder;
+
+  /// No description provided for @lcContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get lcContinue;
+
+  /// No description provided for @lcArtwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Artwork'**
+  String get lcArtwork;
+
+  /// No description provided for @lcGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get lcGallery;
+
+  /// No description provided for @lcDim.
+  ///
+  /// In en, this message translates to:
+  /// **'Darken'**
+  String get lcDim;
+
+  /// No description provided for @lcBlur.
+  ///
+  /// In en, this message translates to:
+  /// **'Blur'**
+  String get lcBlur;
+
+  /// No description provided for @lcFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get lcFormat;
+
+  /// No description provided for @lcSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get lcSize;
+
+  /// No description provided for @lcAlign.
+  ///
+  /// In en, this message translates to:
+  /// **'Alignment'**
+  String get lcAlign;
+
+  /// No description provided for @lcColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Text color'**
+  String get lcColor;
+
+  /// No description provided for @lcShowInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Title and artist'**
+  String get lcShowInfo;
+
+  /// No description provided for @lcExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get lcExport;
+
+  /// No description provided for @lcSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to gallery'**
+  String get lcSave;
+
+  /// No description provided for @lcShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get lcShare;
+
+  /// No description provided for @lcSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Card saved to your gallery'**
+  String get lcSaved;
+
+  /// No description provided for @lcSaveDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage access denied'**
+  String get lcSaveDenied;
+
+  /// No description provided for @lcError.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed'**
+  String get lcError;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

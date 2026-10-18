@@ -44,6 +44,10 @@ flutter:
   assets:
     - assets/fonts/OFL-Inter.txt
     - assets/fonts/OFL-Nunito.txt
+    - assets/fonts/OFL-PlayfairDisplay.txt
+    - assets/fonts/OFL-BebasNeue.txt
+    - assets/fonts/OFL-Caveat.txt
+    - assets/fonts/OFL-SpaceMono.txt
 
   # Polices de la charte (licence SIL OFL 1.1), embarquées pour le hors-ligne.
   # Titres : Nunito (alternative à « Poppins Rounded » de la charte) · Texte : Inter.
@@ -69,4 +73,18 @@ flutter:
         - asset: assets/fonts/Inter-600.ttf
           weight: 600
         - asset: assets/fonts/Inter-700.ttf
+          weight: 700
+    # Polices des LyricsCards (SIL OFL 1.1), embarquées elles aussi.
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay.ttf
+    - family: BebasNeue
+      fonts:
+        - asset: assets/fonts/BebasNeue.ttf
+    - family: Caveat
+      fonts:
+        - asset: assets/fonts/Caveat.ttf
+    - family: SpaceMono
+      fonts:
+        - asset: assets/fonts/SpaceMono-Bold.ttf
           weight: 700

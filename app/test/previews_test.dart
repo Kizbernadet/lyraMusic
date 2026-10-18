@@ -10,12 +10,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lyra/audio/handler.dart';
 import 'package:lyra/data/db.dart';
+import 'package:lyra/data/lyrics.dart';
 import 'package:lyra/l10n/app_localizations.dart';
 import 'package:lyra/models/track.dart';
 import 'package:lyra/state/collections.dart';
+import 'package:lyra/state/dynamic_palette.dart';
 import 'package:lyra/state/library.dart';
+import 'package:lyra/state/lyrics_store.dart';
 import 'package:lyra/state/settings.dart';
 import 'package:lyra/ui/screens/collection_screen.dart';
+import 'package:lyra/ui/screens/lyrics_card_screen.dart';
+import 'package:lyra/ui/screens/workshop_guide.dart';
+import 'package:lyra/ui/screens/workshop_screen.dart';
 import 'package:lyra/ui/screens/onboarding_screen.dart';
 import 'package:lyra/ui/screens/player_screen.dart';
 import 'package:lyra/ui/screens/playlists_screen.dart';
@@ -31,6 +37,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _FakeDb implements LyraDb {
   @override
   dynamic noSuchMethod(Invocation invocation) => null;
+}
+
+/// Paroles de démonstration pour les morceaux 1 à 5 (synchronisées pour les 3 premiers).
+class _DemoLyricsStore extends LyricsStore {
+  _DemoLyricsStore() : super(_FakeDb());
+
+  static const _lrc =
+      '[00:00.00]Sous les néons de la ville\n'
+      '[00:04.00]On danse au bord de la nuit\n'
+      '[00:08.00]Chaque refrain nous rapproche\n'
+      '[00:12.00]La musique nous relie\n'
+      '[00:16.00]Une bande-son pour chaque histoire\n'
+      '[00:20.00]Et les étoiles suivent le rythme\n'
+      '[00:24.00]Jusqu\'au lever du jour\n'
+      '[00:28.00]On garde la mélodie\n';
+
+  @override
+  LyricsStatus status(Track t) =>
+      t.id <= 3 ? LyricsStatus.synced : (t.id <= 5 ? LyricsStatus.plain : LyricsStatus.none);
+
+  @override
+  Future<Lyrics?> lyricsFor(Track t) async => t.id <= 5 ? parseLyrics(_lrc) : null;
 }
 
 Track _t(int id, String title, String? artist, String? album, {int? year, int sec = 215, String? genre}) => Track(
@@ -83,6 +111,7 @@ Future<void> _shot(
   Brightness brightness = Brightness.dark,
   AccentColor accent = AccentColor.classic,
   Future<void> Function()? after,
+  bool lyrics = false,
 }) async {
   tester.view.physicalSize = const Size(1080, 2340);
   tester.view.devicePixelRatio = 2.75;
@@ -92,7 +121,10 @@ Future<void> _shot(
   final library = LibraryController(_FakeDb(), '/tmp')..debugSetTracks(_tracks);
   final collections = CollectionsController(_FakeDb())
     ..debugSeed(
-      playlists: const [Playlist(1, 'Sunday Archive', [1, 3, 5, 6], 0), Playlist(2, 'Openings', [8, 9, 10, 14], 0)],
+      playlists: const [
+        Playlist(1, 'Sunday Archive', [1, 3, 5, 6], 0),
+        Playlist(2, 'Openings', [8, 9, 10, 14], 0),
+      ],
       favorites: const [1, 9, 12],
       recent: const [1, 9, 3, 5, 12],
       most: const [9, 1, 10, 5],
@@ -105,6 +137,8 @@ Future<void> _shot(
         ChangeNotifierProvider.value(value: collections),
         Provider<LyraAudioHandler>.value(value: _audio),
         Provider<ShellNav>.value(value: ShellNav()),
+        ChangeNotifierProvider<LyricsStore>(create: (_) => lyrics ? _DemoLyricsStore() : EmptyLyricsStore(_FakeDb())),
+        ChangeNotifierProvider(create: (_) => DynamicPalette(_audio)),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -140,10 +174,18 @@ void main() {
     }
     const sdk = 'C:/Users/DILITECH/Documents/Flutter_SDK/src/bin/cache/artifacts/material_fonts';
     await _loadFont('MaterialIcons', ['$sdk/materialicons-regular.otf']);
-    await _loadFont('Nunito', [for (final w in [500, 600, 700, 800, 900]) 'assets/fonts/Nunito-$w.ttf']);
-    await _loadFont('Inter', [for (final w in [400, 500, 600, 700]) 'assets/fonts/Inter-$w.ttf']);
+    await _loadFont('Nunito', [
+      for (final w in [500, 600, 700, 800, 900]) 'assets/fonts/Nunito-$w.ttf',
+    ]);
+    await _loadFont('Inter', [
+      for (final w in [400, 500, 600, 700]) 'assets/fonts/Inter-$w.ttf',
+    ]);
     await _loadFont('Roboto', ['assets/fonts/Inter-400.ttf']);
-    SharedPreferences.setMockInitialValues({'onboarded': true});
+    for (final f in ['PlayfairDisplay', 'BebasNeue', 'Caveat']) {
+      await _loadFont(f, ['assets/fonts/$f.ttf']);
+    }
+    await _loadFont('SpaceMono', ['assets/fonts/SpaceMono-Bold.ttf']);
+    SharedPreferences.setMockInitialValues({'onboarded': true, 'workshopGuideSeen': true});
     _prefs = await SharedPreferences.getInstance();
     _audio = LyraAudioHandler(_prefs);
     _audio.tracks.value = _tracks.sublist(0, 6);
@@ -161,11 +203,35 @@ void main() {
     final nav = ShellNav()..homeTab.value = 3;
     await _shot(t, 'albums', Provider<ShellNav>.value(value: nav, child: const Shell()));
   });
-  testWidgets('artiste', (t) => _shot(t, 'artiste', CollectionScreen.artist(Group('Ariana Grande', [_tracks[11], _tracks[12]]))));
+  testWidgets(
+    'artiste',
+    (t) => _shot(t, 'artiste', CollectionScreen.artist(Group('Ariana Grande', [_tracks[11], _tracks[12]]))),
+  );
   testWidgets('lecteur', (t) => _shot(t, 'lecteur', const PlayerScreen()));
-  testWidgets('lecteur clair', (t) => _shot(t, 'lecteur-clair', const PlayerScreen(), brightness: Brightness.light, accent: AccentColor.terracotta));
+  testWidgets(
+    'lecteur clair',
+    (t) =>
+        _shot(t, 'lecteur-clair', const PlayerScreen(), brightness: Brightness.light, accent: AccentColor.terracotta),
+  );
   testWidgets('recherche', (t) => _shot(t, 'recherche', const SearchScreen()));
   testWidgets('playlists', (t) => _shot(t, 'playlists', const PlaylistsScreen()));
   testWidgets('reglages', (t) => _shot(t, 'reglages', const SettingsScreen()));
   testWidgets('presentation', (t) => _shot(t, 'presentation', OnboardingScreen(onGranted: () {})));
+  testWidgets('paroles', (t) => _shot(t, 'paroles', const PlayerScreen(startWithLyrics: true), lyrics: true));
+  testWidgets('atelier', (t) => _shot(t, 'atelier', const WorkshopScreen(), lyrics: true));
+  testWidgets('atelier guide', (t) => _shot(t, 'atelier-guide', const WorkshopGuide(), lyrics: true));
+  testWidgets('lyricscard', (t) async {
+    await _shot(
+      t,
+      'lyricscard',
+      const LyricsCardScreen(trackId: 2),
+      lyrics: true,
+      after: () async {
+        await t.pump(const Duration(milliseconds: 300));
+        await t.tapAt(t.getTopLeft(find.byType(TextField)) + const Offset(60, 20));
+        await t.pump(const Duration(milliseconds: 800)); // pas un double toucher
+        await t.tapAt(t.getTopLeft(find.byType(TextField)) + const Offset(60, 105));
+      },
+    );
+  });
 }

@@ -4,21 +4,29 @@ import 'package:lyra/models/track.dart';
 import 'package:lyra/state/library.dart';
 import 'package:lyra/utils/text.dart';
 
-Track t(int id, String title, {int? no, int? disc, String? artist, String? album, String? albumArtist, String folder = '/m'}) =>
-    Track(
-      id: id,
-      path: '$folder/$title.mp3',
-      title: title,
-      trackNumber: no,
-      discNumber: disc,
-      artist: artist,
-      album: album,
-      albumArtist: albumArtist,
-      durationMs: 1000,
-      size: 1,
-      dateAdded: id,
-      dateModified: 0,
-    );
+Track t(
+  int id,
+  String title, {
+  int? no,
+  int? disc,
+  String? artist,
+  String? album,
+  String? albumArtist,
+  String folder = '/m',
+}) => Track(
+  id: id,
+  path: '$folder/$title.mp3',
+  title: title,
+  trackNumber: no,
+  discNumber: disc,
+  artist: artist,
+  album: album,
+  albumArtist: albumArtist,
+  durationMs: 1000,
+  size: 1,
+  dateAdded: id,
+  dateModified: 0,
+);
 
 void main() {
   group('Recherche sans accents (CA-08)', () {
@@ -42,8 +50,10 @@ void main() {
       expect(t(1, 'a', album: 'X').albumKey, t(2, 'b', album: 'x').albumKey);
     });
     test('« Greatest Hits » de deux artistes dans deux dossiers → deux albums', () {
-      expect(t(1, 'a', album: 'Greatest Hits', folder: '/m/A').albumKey,
-          isNot(t(2, 'b', album: 'Greatest Hits', folder: '/m/B').albumKey));
+      expect(
+        t(1, 'a', album: 'Greatest Hits', folder: '/m/A').albumKey,
+        isNot(t(2, 'b', album: 'Greatest Hits', folder: '/m/B').albumKey),
+      );
     });
   });
 

@@ -9,6 +9,7 @@ class DynamicPalette extends ChangeNotifier {
   final LyraAudioHandler audio;
   Color? seed;
   String? _art;
+  bool _disposed = false;
 
   DynamicPalette(this.audio) {
     audio.index.addListener(_update);
@@ -21,13 +22,14 @@ class DynamicPalette extends ChangeNotifier {
     if (art == _art) return;
     _art = art;
     final color = art == null ? null : await dominantColor(art);
-    if (art != _art) return; // un autre morceau a démarré entre-temps
+    if (_disposed || art != _art) return; // écran fermé, ou un autre morceau a démarré entre-temps
     seed = color;
     notifyListeners();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     audio.index.removeListener(_update);
     audio.tracks.removeListener(_update);
     super.dispose();

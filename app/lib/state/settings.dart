@@ -222,6 +222,10 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> setOnboarded() => prefs.setBool('onboarded', true);
 
+  /// Le parcours « Comment fonctionne l'Atelier ? » a déjà été montré.
+  bool get workshopGuideSeen => prefs.getBool('workshopGuideSeen') ?? false;
+  Future<void> setWorkshopGuideSeen() => prefs.setBool('workshopGuideSeen', true);
+
   List<String> get recentSearches => prefs.getStringList('recentSearches') ?? const [];
 
   Future<void> addRecentSearch(String query) async {

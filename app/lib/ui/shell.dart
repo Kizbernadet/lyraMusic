@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../state/library_sync.dart';
 import 'brand/logo.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/home_screen.dart';
@@ -29,10 +30,18 @@ class Gate extends StatefulWidget {
 class _GateState extends State<Gate> {
   bool? _granted;
   bool _splashDone = false;
+  late final LibrarySync _sync;
+
+  @override
+  void dispose() {
+    _sync.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
+    _sync = LibrarySync(context.library);
     _check();
     // L'écran de démarrage reste le temps de son animation.
     Future.delayed(SplashLogoAnimation.duration + const Duration(milliseconds: 250), () {
@@ -54,7 +63,8 @@ class _GateState extends State<Gate> {
   }
 
   /// Le scan tourne en arrière-plan ; la bibliothèque en cache s'affiche tout de suite.
-  void _startScan() => context.library.scan();
+  /// Ensuite, les nouveaux fichiers sont détectés automatiquement.
+  void _startScan() => _sync.start();
 
   @override
   Widget build(BuildContext context) {

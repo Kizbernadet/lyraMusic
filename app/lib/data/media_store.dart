@@ -29,6 +29,10 @@ class MediaRow {
 /// Pont vers le code natif (MainActivity.kt, canal "lyra/media").
 class MediaStoreBridge {
   static const _channel = MethodChannel('lyra/media');
+  static const _changes = EventChannel('lyra/media/changes');
+
+  /// Un événement chaque fois que la musique du téléphone change (déjà regroupé côté natif).
+  static Stream<void> changes() => _changes.receiveBroadcastStream().map((_) {});
 
   static int? _sdk;
 

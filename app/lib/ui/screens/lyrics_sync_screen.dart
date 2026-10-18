@@ -172,7 +172,9 @@ class _LyricsSyncScreenState extends State<LyricsSyncScreen> {
     final c = context.c;
     final audio = context.audio;
     if (!_ready) {
-      return Scaffold(body: Center(child: CircularProgressIndicator(color: c.primary)));
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator(color: c.primary)),
+      );
     }
     final done = _times.where((t) => t != null).length;
 

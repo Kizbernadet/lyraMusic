@@ -89,9 +89,6 @@ int lyricsKindOf(String? text) {
   return _stamp.allMatches(text).length >= 2 ? 2 : 1;
 }
 
-/// Texte sans horodatages (pour éditer des paroles synchronisées).
-String plainLyrics(String text) => parseLyrics(text).lines.map((l) => l.text).join('\n').trim();
-
 /// Paroles synchronisées → texte LRC.
 String toLrc(List<LyricLine> lines) {
   String stamp(Duration d) {

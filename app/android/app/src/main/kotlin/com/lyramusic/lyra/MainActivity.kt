@@ -3,6 +3,8 @@ package com.lyramusic.lyra
 import android.app.Activity
 import android.content.ContentUris
 import android.content.Intent
+import android.database.ContentObserver
+import android.net.Uri
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Handler
@@ -10,6 +12,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileInputStream
@@ -29,6 +32,8 @@ class MainActivity : AudioServiceActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         SystemChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, "lyra/media/changes")
+            .setStreamHandler(MediaWatcher(applicationContext, main))
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -43,6 +48,21 @@ class MainActivity : AudioServiceActivity() {
                         val source = call.argument<String>("source")!!
                         val path = call.argument<String>("path")
                         background(result) { writeFromFile(id, source, path) }
+                    }
+                    "saveImage" -> {
+                        val png = call.argument<ByteArray>("png")!!
+                        val name = call.argument<String>("name")!!
+                        background(result) { CardExport.save(this, png, name) }
+                    }
+                    "shareImage" -> {
+                        val png = call.argument<ByteArray>("png")!!
+                        val name = call.argument<String>("name")!!
+                        val title = call.argument<String>("title")
+                        background(result) {
+                            val intent = CardExport.shareIntent(this, png, name, title)
+                            main.post { startActivity(intent) }
+                            true
+                        }
                     }
                     else -> result.notImplemented()
                 }
@@ -150,5 +170,37 @@ class MainActivity : AudioServiceActivity() {
             MediaScannerConnection.scanFile(this, arrayOf(path), null, null)
         }
         return true
+    }
+}
+
+/**
+ * Prévient Flutter quand MediaStore change (fichier audio ajouté, supprimé ou modifié).
+ * Les notifications arrivent souvent en rafale (copie de dossier) : on attend
+ * un court moment de calme avant d'envoyer un seul événement.
+ */
+private class MediaWatcher(
+    private val context: android.content.Context,
+    private val main: Handler,
+) : EventChannel.StreamHandler {
+    private var sink: EventChannel.EventSink? = null
+    private val emit = Runnable { sink?.success(null) }
+    private val observer = object : ContentObserver(main) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+            main.removeCallbacks(emit)
+            main.postDelayed(emit, 1500)
+        }
+    }
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+        sink = events
+        context.contentResolver.registerContentObserver(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, observer
+        )
+    }
+
+    override fun onCancel(arguments: Any?) {
+        context.contentResolver.unregisterContentObserver(observer)
+        main.removeCallbacks(emit)
+        sink = null
     }
 }

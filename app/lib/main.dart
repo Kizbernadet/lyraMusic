@@ -29,7 +29,14 @@ Future<void> main() async {
 
   // Licences des polices embarquées (écran « Licences open source »).
   LicenseRegistry.addLicense(() async* {
-    for (final (name, file) in const [('Inter', 'OFL-Inter.txt'), ('Nunito', 'OFL-Nunito.txt')]) {
+    for (final (name, file) in const [
+      ('Inter', 'OFL-Inter.txt'),
+      ('Nunito', 'OFL-Nunito.txt'),
+      ('Playfair Display', 'OFL-PlayfairDisplay.txt'),
+      ('Bebas Neue', 'OFL-BebasNeue.txt'),
+      ('Caveat', 'OFL-Caveat.txt'),
+      ('Space Mono', 'OFL-SpaceMono.txt'),
+    ]) {
       yield LicenseEntryWithLineBreaks([name], await rootBundle.loadString('assets/fonts/$file'));
     }
   });

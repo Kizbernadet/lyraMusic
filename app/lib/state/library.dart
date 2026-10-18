@@ -59,17 +59,39 @@ class LibraryController extends ChangeNotifier {
     _folders = null;
   }
 
+  bool _again = false;
+
   /// Scan incrémental : seuls les fichiers nouveaux ou modifiés sont relus.
-  /// Renvoie le nombre de morceaux de la bibliothèque.
+  /// Silencieux quand rien n'a changé (aucune reconstruction de l'interface) ;
+  /// sinon une fine barre de progression s'affiche et les nouveaux morceaux
+  /// apparaissent au fil de l'analyse. Un scan demandé pendant un autre est
+  /// mis en file et relancé à la fin. Renvoie le nombre de morceaux.
   Future<int> scan() async {
-    if (scanning) return _tracks.length;
-    scanning = true;
+    if (_busy) {
+      _again = true;
+      return _tracks.length;
+    }
+    _busy = true;
+    try {
+      do {
+        _again = false;
+        await _scanOnce();
+      } while (_again);
+    } finally {
+      _busy = false;
+    }
+    return _tracks.length;
+  }
+
+  bool _busy = false;
+
+  Future<void> _scanOnce() async {
     scanError = null;
-    scanDone = 0;
-    scanTotal = 0;
-    notifyListeners();
     try {
       final rows = (await MediaStoreBridge.queryAudio()).where((r) => isSupported(r.path)).toList();
+      // Pochettes présentes sur le disque, lues une seule fois et hors du fil de l'interface.
+      final arts = await _existingArt();
+      final before = _byId;
       final keep = <Track>[];
       final toParse = <MediaRow>[];
       for (final row in rows) {
@@ -78,7 +100,7 @@ class LibraryController extends ChangeNotifier {
             old.path == row.path &&
             old.size == row.size &&
             old.dateModified == row.dateModified &&
-            (old.art == null || File(old.art!).existsSync())) {
+            (old.art == null || arts.contains(old.art))) {
           keep.add(old);
         } else {
           toParse.add(row);
@@ -86,15 +108,24 @@ class LibraryController extends ChangeNotifier {
       }
       final present = rows.map((r) => r.id).toSet();
       final removed = _tracks.where((t) => !present.contains(t.id)).map((t) => t.id).toList();
+      if (toParse.isEmpty && removed.isEmpty) return; // rien de neuf
 
       final knownArt = <String, String>{
         for (final t in keep)
           if (t.art != null) t.albumKey: t.art!,
       };
+      scanning = true;
+      scanDone = 0;
       scanTotal = toParse.length;
       notifyListeners();
 
+      List<Track> withAlbumArt(Iterable<Track> list) => list.map((t) {
+        final art = knownArt[t.albumKey];
+        return t.art == null && art != null ? t.copyWith(art: () => art) : t;
+      }).toList();
+
       final parsed = <Track>[];
+      final clock = Stopwatch()..start();
       const chunk = 60;
       for (var i = 0; i < toParse.length; i += chunk) {
         final part = toParse.sublist(i, i + chunk > toParse.length ? toParse.length : i + chunk);
@@ -104,25 +135,33 @@ class LibraryController extends ChangeNotifier {
         }
         parsed.addAll(result);
         scanDone = parsed.length;
+        // Les nouveaux morceaux apparaissent au fur et à mesure (au plus une fois par seconde).
+        if (clock.elapsedMilliseconds > 1000 && i + chunk < toParse.length) {
+          clock.reset();
+          final pending = [for (final r in toParse.skip(i + chunk)) ?before[r.id]];
+          _setTracks(withAlbumArt([...keep, ...parsed, ...pending]));
+        }
         notifyListeners();
       }
 
       // Les morceaux d'un album sans pochette prennent celle de l'album.
-      final all = [...keep, ...parsed].map((t) {
-        final art = knownArt[t.albumKey];
-        return t.art == null && art != null ? t.copyWith(art: () => art) : t;
-      }).toList();
-
+      final all = withAlbumArt([...keep, ...parsed]);
       if (removed.isNotEmpty) await db.deleteTracks(removed);
-      await db.upsertTracks(all.where((t) => !identical(t, _byId[t.id])));
+      await db.upsertTracks(all.where((t) => !identical(t, before[t.id])));
       _setTracks(all);
-      return all.length;
     } catch (e) {
       scanError = e;
-      return _tracks.length;
     } finally {
       scanning = false;
       notifyListeners();
+    }
+  }
+
+  Future<Set<String>> _existingArt() async {
+    try {
+      return await Directory(artDir).list().map((e) => e.path).toSet();
+    } catch (_) {
+      return {};
     }
   }
 
