@@ -7,6 +7,7 @@ import '../../state/library.dart';
 import '../../state/settings.dart';
 import '../../utils/text.dart';
 import '../theme.dart';
+import '../widgets/artwork.dart';
 import '../widgets/common.dart';
 import '../widgets/kit.dart';
 import '../widgets/library_widgets.dart';
@@ -16,7 +17,7 @@ import 'history_screen.dart';
 import 'incomplete_screen.dart';
 import 'search_screen.dart';
 import 'track_list_screen.dart';
-import 'workshop_screen.dart';
+import 'favorites_screen.dart';
 import '../../state/lyrics_store.dart';
 
 /// Onglets de l'Accueil qu'on fait défiler du doigt, synchronisés avec les onglets soulignés.
@@ -193,6 +194,7 @@ class _SuggestionsView extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
+          const _FavoritesCard(),
           const _WorkshopCard(),
           if (recent.isNotEmpty) ...[
             SectionHead(l.recentlyPlayed, action: l.seeAll, onAction: () => context.push(const HistoryScreen())),
@@ -632,6 +634,83 @@ class ScanBanner extends StatelessWidget {
   );
 }
 
+/// Carte « Favoris » : accès direct aux morceaux aimés, avec lecture aléatoire.
+class _FavoritesCard extends StatelessWidget {
+  const _FavoritesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l;
+    final c = context.c;
+    final lib = context.watch<LibraryController>();
+    final favorites = lib.resolve(context.watch<CollectionsController>().favoriteIds);
+    final covers = [for (final t in favorites) ?t.art].take(3).toList();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+      child: Press(
+        onTap: () => context.push(const FavoritesScreen()),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+          decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(radiusL)),
+          child: Row(
+            children: [
+              // Petite pile de pochettes, ou un cœur s'il n'y en a pas encore.
+              SizedBox(
+                width: 58,
+                height: 50,
+                child: covers.isEmpty
+                    ? Container(
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: c.primary.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(Icons.favorite_rounded, color: c.primary),
+                      )
+                    : Stack(
+                        children: [
+                          for (var i = covers.length - 1; i >= 0; i--)
+                            Positioned(
+                              left: i * 4.0,
+                              top: i * 2.0,
+                              child: Artwork(path: covers[i], size: 50 - i * 4.0, radius: 12),
+                            ),
+                        ],
+                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(child: Text(l.favorites, style: context.t.h3, maxLines: 1)),
+                        const SizedBox(width: 6),
+                        Icon(Icons.favorite_rounded, size: 15, color: c.primary),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(l.songsCount(favorites.length), maxLines: 1, style: context.t.meta),
+                  ],
+                ),
+              ),
+              if (favorites.isNotEmpty)
+                LyraIconButton(
+                  icon: Icons.shuffle_rounded,
+                  color: c.text2,
+                  tooltip: l.shuffleAll,
+                  onPressed: () => context.audio.playTracks(favorites, 0, shuffled: true),
+                ),
+              Icon(Icons.chevron_right_rounded, color: c.text2),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Carte « Atelier » : ce qu'il reste à compléter (paroles, synchro, tags).
 class _WorkshopCard extends StatelessWidget {
   const _WorkshopCard();
@@ -658,7 +737,7 @@ class _WorkshopCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
       child: Press(
-        onTap: () => context.push(WorkshopScreen(initialTab: plain > 0 ? 1 : 0)),
+        onTap: () => context.shell.goTab(ShellNav.workshop, workshopTab: plain > 0 ? 1 : (none > 0 ? 0 : 3)),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

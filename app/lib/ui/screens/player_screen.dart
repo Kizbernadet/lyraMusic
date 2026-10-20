@@ -323,97 +323,109 @@ class _PlayerBody extends StatelessWidget {
       ],
     );
 
+    // Paysage : pochette (ou rappel + commandes) à gauche, le reste à droite.
+    // Sur un écran aussi bas, une seule colonne déborderait.
+    final size = MediaQuery.sizeOf(context);
+    final landscape = size.width > size.height;
+
+    /// Colonne qui défile si la hauteur manque, et reste centrée sinon.
+    Widget fit(List<Widget> children) => LayoutBuilder(
+      builder: (context, box) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: box.maxHeight),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: children),
+        ),
+      ),
+    );
+
     if (lyrics) {
-      return Column(
-        children: [
-          topBar,
-          // Rappel compact du morceau
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-            child: Row(
-              children: [
-                Artwork(path: track.art, size: 48, radius: 10, seed: track.album ?? track.title),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        track.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.t.title.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      Text(artistName(context, track.artist), maxLines: 1, style: context.t.meta),
-                    ],
+      // Rappel compact du morceau
+      final recap = Padding(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+        child: Row(
+          children: [
+            Artwork(path: track.art, size: 48, radius: 10, seed: track.album ?? track.title),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    track.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.t.title.copyWith(fontWeight: FontWeight.w700),
                   ),
-                ),
-                _FavButton(fav: fav, onTap: () => toggleFavorite(context, track)),
-              ],
+                  Text(artistName(context, track.artist), maxLines: 1, style: context.t.meta),
+                ],
+              ),
             ),
-          ),
-          controls,
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 8, 8),
-            child: Row(
-              children: [
-                Expanded(child: Text(l.lyrics, style: context.t.h2)),
-                LyricsActions(track: track),
-                LyraIconButton(
-                  icon: Icons.keyboard_arrow_down_rounded,
-                  color: c.text2,
-                  tooltip: l.artwork,
-                  onPressed: () => onLyrics(false),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: LyricsPanel(key: ValueKey('${track.id}-${context.watch<LyricsStore>().version}'), track: track),
-            ),
-          ),
-        ],
+            _FavButton(fav: fav, onTap: () => toggleFavorite(context, track)),
+          ],
+        ),
       );
+      final header = Padding(
+        padding: EdgeInsets.fromLTRB(20, landscape ? 4 : 14, 8, 8),
+        child: Row(
+          children: [
+            Expanded(child: Text(l.lyrics, style: context.t.h2, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            LyricsActions(track: track),
+            LyraIconButton(
+              icon: Icons.keyboard_arrow_down_rounded,
+              color: c.text2,
+              tooltip: l.artwork,
+              onPressed: () => onLyrics(false),
+            ),
+          ],
+        ),
+      );
+      final panel = Expanded(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: LyricsPanel(key: ValueKey('${track.id}-${context.watch<LyricsStore>().version}'), track: track),
+        ),
+      );
+      if (landscape) {
+        return Column(
+          children: [
+            topBar,
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: fit([recap, controls])),
+                  Expanded(child: Column(children: [header, panel])),
+                ],
+              ),
+            ),
+          ],
+        );
+      }
+      return Column(children: [topBar, recap, controls, header, panel]);
     }
 
-    return Column(
-      children: [
-        topBar,
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-            child: LayoutBuilder(
-              builder: (context, box) {
-                final size = box.biggest.shortestSide.clamp(120.0, 360.0);
-                final art = PlayerArtwork(track: track, size: size, style: settings.artworkStyle);
-                return Center(
-                  child: on(Toggle.playerSwipe)
-                      ? GestureDetector(
-                          onHorizontalDragEnd: (d) {
-                            final v = d.primaryVelocity ?? 0;
-                            if (v < -300) audio.skipToNext();
-                            if (v > 300) audio.skipToPrevious();
-                          },
-                          onVerticalDragEnd: (d) {
-                            if ((d.primaryVelocity ?? 0) < -300 && on(Toggle.actionLyrics)) onLyrics(true);
-                          },
-                          child: art,
-                        )
-                      : art,
-                );
-              },
-            ),
-          ),
-        ),
-        titleBlock,
-        const SizedBox(height: 6),
-        controls,
-        if (on(Toggle.playerVolume)) const VolumeBar(),
-        if (on(Toggle.playerNextUp)) const _NextUp(),
-        if (on(Toggle.actionLyrics))
-          InkWell(
+    final artwork = LayoutBuilder(
+      builder: (context, box) {
+        final side = box.biggest.shortestSide.clamp(48.0, 360.0);
+        final art = PlayerArtwork(track: track, size: side, style: settings.artworkStyle);
+        return Center(
+          child: on(Toggle.playerSwipe)
+              ? GestureDetector(
+                  onHorizontalDragEnd: (d) {
+                    final v = d.primaryVelocity ?? 0;
+                    if (v < -300) audio.skipToNext();
+                    if (v > 300) audio.skipToPrevious();
+                  },
+                  onVerticalDragEnd: (d) {
+                    if ((d.primaryVelocity ?? 0) < -300 && on(Toggle.actionLyrics)) onLyrics(true);
+                  },
+                  child: art,
+                )
+              : art,
+        );
+      },
+    );
+    final lyricsButton = on(Toggle.actionLyrics)
+        ? InkWell(
             onTap: () => onLyrics(true),
             borderRadius: BorderRadius.circular(radiusM),
             child: Padding(
@@ -426,8 +438,48 @@ class _PlayerBody extends StatelessWidget {
               ),
             ),
           )
-        else
-          const SizedBox(height: 16),
+        : const SizedBox(height: 16);
+
+    if (landscape) {
+      return Column(
+        children: [
+          topBar,
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Padding(padding: const EdgeInsets.fromLTRB(24, 4, 8, 16), child: artwork),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: fit([
+                    titleBlock,
+                    controls,
+                    if (on(Toggle.playerVolume)) const VolumeBar(),
+                    if (on(Toggle.playerNextUp)) const _NextUp(),
+                    lyricsButton,
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        topBar,
+        Expanded(
+          child: Padding(padding: const EdgeInsets.fromLTRB(24, 12, 24, 16), child: artwork),
+        ),
+        titleBlock,
+        const SizedBox(height: 6),
+        controls,
+        if (on(Toggle.playerVolume)) const VolumeBar(),
+        if (on(Toggle.playerNextUp)) const _NextUp(),
+        lyricsButton,
       ],
     );
   }

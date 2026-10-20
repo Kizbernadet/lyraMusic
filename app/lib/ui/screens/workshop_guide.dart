@@ -38,6 +38,8 @@ class _WorkshopGuideState extends State<WorkshopGuide> {
   Widget build(BuildContext context) {
     final l = context.l;
     final c = context.c;
+    final size = MediaQuery.sizeOf(context);
+    final landscape = size.width > size.height;
     final steps = [
       (l.guide1Title, l.guide1Body, (bool on) => _TypeScene(active: on)),
       (l.guide2Title, l.guide2Body, (bool on) => _SyncScene(active: on)),
@@ -77,30 +79,34 @@ class _WorkshopGuideState extends State<WorkshopGuide> {
                   builder: (context, child) {
                     // Parallaxe : la scène glisse moins vite que le texte et pivote légèrement.
                     final delta = _pages.hasClients && _pages.position.haveDimensions ? (_pages.page ?? 0) - i : 0.0;
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.identity()
-                              ..setEntry(3, 2, 0.0012)
-                              ..translateByDouble(delta * 140, 0, 0, 1)
-                              ..rotateY(delta * 0.5),
-                            child: Opacity(
-                              opacity: (1 - delta.abs()).clamp(0.0, 1.0),
-                              child: RepaintBoundary(child: steps[i].$3(i == _page)),
-                            ),
-                          ),
-                        ),
-                        _StepText(
-                          key: ValueKey('t$i-${i == _page}'),
-                          step: i + 1,
-                          title: steps[i].$1,
-                          body: steps[i].$2,
-                          animate: i == _page,
-                        ),
-                      ],
+                    final scene = Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, 0.0012)
+                        ..translateByDouble(delta * 140, 0, 0, 1)
+                        ..rotateY(delta * 0.5),
+                      child: Opacity(
+                        opacity: (1 - delta.abs()).clamp(0.0, 1.0),
+                        child: RepaintBoundary(child: steps[i].$3(i == _page)),
+                      ),
                     );
+                    final text = _StepText(
+                      key: ValueKey('t$i-${i == _page}'),
+                      step: i + 1,
+                      title: steps[i].$1,
+                      body: steps[i].$2,
+                      animate: i == _page,
+                    );
+                    // Paysage : la scène à gauche, le texte à droite.
+                    if (landscape) {
+                      return Row(
+                        children: [
+                          Expanded(child: scene),
+                          Expanded(child: Center(child: SingleChildScrollView(child: text))),
+                        ],
+                      );
+                    }
+                    return Column(children: [Expanded(child: scene), text]);
                   },
                 ),
               ),

@@ -8,6 +8,7 @@ import '../models/track.dart';
 import '../utils/text.dart';
 import 'lyrics.dart';
 import 'media_store.dart';
+import 'safe_metadata.dart';
 
 const supportedExtensions = {'mp3', 'flac', 'm4a'};
 
@@ -26,7 +27,7 @@ Future<List<Track>> parseInIsolate({
 List<Track> parseRows(List<MediaRow> rows, String artDir, Map<String, String> knownArt) {
   final out = <Track>[];
   for (final row in rows) {
-    var track = parseFile(row);
+    var track = parseFile(row, scratchDir: artDir);
     final key = track.albumKey;
     var art = knownArt[key];
     if (art == null || !File(art).existsSync()) {
@@ -48,10 +49,10 @@ String? _clean(String? s) {
 
 /// Construit un [Track] à partir des tags du fichier.
 /// Si les tags sont absents ou illisibles, on utilise le nom du fichier.
-Track parseFile(MediaRow row) {
+Track parseFile(MediaRow row, {String? scratchDir}) {
   AudioMetadata? meta;
   try {
-    meta = readMetadata(File(row.path), getImage: false);
+    meta = readMetadataSafe(File(row.path), scratchDir: scratchDir);
   } catch (_) {
     meta = null; // fichier sans tags lisibles : on se replie sur MediaStore
   }
@@ -89,7 +90,7 @@ String? _albumFromStore(MediaRow row) {
 /// Extrait la pochette du fichier vers [artDir]. Renvoie le chemin ou null.
 String? extractArt(String path, String artDir, String key) {
   try {
-    final meta = readMetadata(File(path), getImage: true);
+    final meta = readMetadataSafe(File(path), getImage: true, scratchDir: artDir);
     if (meta.pictures.isEmpty) return null;
     final pic = meta.pictures.firstWhere(
       (x) => x.pictureType == PictureType.coverFront,

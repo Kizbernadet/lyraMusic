@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:path/path.dart' as p;
+
+import 'safe_metadata.dart';
 
 class LyricLine {
   final Duration? time;
@@ -33,10 +34,15 @@ class Lyrics {
 }
 
 /// Paroles intégrées au fichier (USLT / LYRICS) ou fichier .lrc à côté.
-Future<Lyrics?> loadLyrics(String audioPath) => Isolate.run(() {
+Future<Lyrics?> loadLyrics(String audioPath) {
+  final scratch = metadataScratchDir;
+  return Isolate.run(() => _loadLyrics(audioPath, scratch));
+}
+
+Lyrics? _loadLyrics(String audioPath, String? scratch) {
   String? text;
   try {
-    text = readMetadata(File(audioPath), getImage: false).lyrics;
+    text = readMetadataSafe(File(audioPath), scratchDir: scratch).lyrics;
   } catch (_) {}
   if (text == null || text.trim().isEmpty) {
     try {
@@ -46,7 +52,7 @@ Future<Lyrics?> loadLyrics(String audioPath) => Isolate.run(() {
   }
   if (text == null || text.trim().isEmpty) return null;
   return parseLyrics(text);
-});
+}
 
 final _stamp = RegExp(r'\[(\d{1,3}):(\d{1,2}(?:[.:]\d{1,3})?)\]');
 final _meta = RegExp(r'^\[(ar|ti|al|by|offset|length|re|ve|au|#):', caseSensitive: false);

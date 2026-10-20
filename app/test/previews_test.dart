@@ -112,9 +112,10 @@ Future<void> _shot(
   AccentColor accent = AccentColor.classic,
   Future<void> Function()? after,
   bool lyrics = false,
+  bool landscape = false,
 }) async {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 2.75;
+  tester.view.physicalSize = landscape ? const Size(2340, 1080) : const Size(1080, 2340);
+  tester.view.devicePixelRatio = landscape ? 3.0 : 2.75;
   addTearDown(tester.view.reset);
 
   final settings = SettingsController(_prefs);
@@ -220,6 +221,31 @@ void main() {
   testWidgets('paroles', (t) => _shot(t, 'paroles', const PlayerScreen(startWithLyrics: true), lyrics: true));
   testWidgets('atelier', (t) => _shot(t, 'atelier', const WorkshopScreen(), lyrics: true));
   testWidgets('atelier guide', (t) => _shot(t, 'atelier-guide', const WorkshopGuide(), lyrics: true));
+  // Paysage : aucun débordement (un overflow fait échouer le test).
+  group('paysage', () {
+    for (final (name, screen, lyrics) in <(String, Widget, bool)>[
+      ('accueil', const Shell(), false),
+      ('lecteur', const PlayerScreen(), false),
+      ('paroles', const PlayerScreen(startWithLyrics: true), true),
+      ('atelier', const WorkshopScreen(), true),
+      ('playlists', const PlaylistsScreen(), false),
+      ('reglages', const SettingsScreen(), false),
+      ('recherche', const SearchScreen(), false),
+      ('favoris', const PlaylistScreen.favorites(), false),
+      ('guide', const WorkshopGuide(), true),
+      ('presentation', OnboardingScreen(onGranted: () {}), false),
+    ]) {
+      testWidgets(name, (t) => _shot(t, 'paysage-$name', screen, lyrics: lyrics, landscape: true));
+    }
+    testWidgets('onglet atelier', (t) async {
+      final nav = ShellNav()..tab.value = ShellNav.workshop;
+      await _shot(t, 'paysage-onglet-atelier', Provider<ShellNav>.value(value: nav, child: const Shell()), lyrics: true, landscape: true);
+    });
+  });
+  testWidgets('onglet atelier', (t) async {
+    final nav = ShellNav()..tab.value = ShellNav.workshop;
+    await _shot(t, 'onglet-atelier', Provider<ShellNav>.value(value: nav, child: const Shell()), lyrics: true);
+  });
   testWidgets('lyricscard', (t) async {
     await _shot(
       t,

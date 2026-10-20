@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'audio/handler.dart';
 import 'data/db.dart';
+import 'data/safe_metadata.dart';
 import 'l10n/app_localizations.dart';
 import 'state/collections.dart';
 import 'state/dynamic_palette.dart';
@@ -58,6 +59,7 @@ Future<void> main() async {
 
   final db = await LyraDb.open();
   final support = await getApplicationSupportDirectory();
+  metadataScratchDir = (await getTemporaryDirectory()).path;
   final artDir = Directory(p.join(support.path, 'art'));
   await artDir.create(recursive: true);
 

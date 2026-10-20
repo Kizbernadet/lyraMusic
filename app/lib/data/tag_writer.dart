@@ -13,6 +13,7 @@ import '../models/track.dart';
 import 'id3_preserve.dart';
 import 'media_store.dart';
 import 'mp4_skeleton.dart';
+import 'safe_metadata.dart';
 import 'scanner.dart';
 
 /// Modifications demandées par l'éditeur de tags.
@@ -136,6 +137,8 @@ Future<void> _delete(List<File> files) async {
 void applyEdit(String path, TagEdit e) {
   final file = File(path);
   if (p.extension(path).toLowerCase() == '.m4a') {
+    // Structure que la bibliothèque ne sait pas parcourir : on refuse proprement.
+    ensureWritableLayout(path);
     // M4A sans bloc de tags : on crée la structure avant d'écrire.
     final patched = addIlstIfMissing(file.readAsBytesSync());
     if (patched != null) file.writeAsBytesSync(patched, flush: true);
@@ -178,7 +181,7 @@ void applyEdit(String path, TagEdit e) {
 }
 
 void verify(String path, String expectedTitle) {
-  final meta = readMetadata(File(path), getImage: false);
+  final meta = readMetadataSafe(File(path));
   if ((meta.title ?? '').trim() != expectedTitle.trim()) {
     throw StateError('Verification failed: "${meta.title}" != "$expectedTitle"');
   }
