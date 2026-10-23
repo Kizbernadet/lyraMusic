@@ -7,10 +7,10 @@ import '../../state/library.dart';
 import '../../state/settings.dart';
 import '../../utils/text.dart';
 import '../theme.dart';
-import '../widgets/artwork.dart';
 import '../widgets/common.dart';
 import '../widgets/kit.dart';
 import '../widgets/library_widgets.dart';
+import '../widgets/selection.dart';
 import '../widgets/track_tile.dart';
 import 'collection_screen.dart';
 import 'history_screen.dart';
@@ -194,7 +194,7 @@ class _SuggestionsView extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          const _FavoritesCard(),
+          const _Shortcuts(),
           const _WorkshopCard(),
           if (recent.isNotEmpty) ...[
             SectionHead(l.recentlyPlayed, action: l.seeAll, onAction: () => context.push(const HistoryScreen())),
@@ -280,8 +280,21 @@ class _SuggestionsView extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Titres
 
-class _SongsView extends StatelessWidget {
+class _SongsView extends StatefulWidget {
   const _SongsView();
+
+  @override
+  State<_SongsView> createState() => _SongsViewState();
+}
+
+class _SongsViewState extends State<_SongsView> {
+  final _selection = TrackSelection();
+
+  @override
+  void dispose() {
+    _selection.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -291,60 +304,75 @@ class _SongsView extends StatelessWidget {
     final s = context.watch<SettingsController>();
     final tracks = lib.sorted(s.songSort, ascending: s.songAscending);
     final incomplete = lib.incomplete.length;
-    return Scrollbar(
-      interactive: true,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: ListHeaderBar<SongSort>(
-              count: l.songsCount(tracks.length),
-              current: s.songSort,
-              ascending: s.songAscending,
-              onSort: s.setSongSort,
-              onAscending: s.setSongAscending,
-              options: [
-                SortOption(SongSort.title, l.sortTitle),
-                SortOption(SongSort.artist, l.sortArtist),
-                SortOption(SongSort.album, l.sortAlbum),
-                SortOption(SongSort.year, l.fieldYear),
-                SortOption(SongSort.dateAdded, l.sortDateAdded),
-                SortOption(SongSort.duration, l.detailsDuration),
-              ],
-              leading: LyraIconButton(
-                icon: Icons.shuffle_rounded,
-                color: c.text,
-                tooltip: l.shuffleAll,
-                onPressed: () => context.audio.playTracks(tracks, 0, shuffled: true),
-              ),
-            ),
-          ),
-          if (incomplete > 0)
+    return ListenableBuilder(
+      listenable: _selection,
+      builder: (context, _) => Scrollbar(
+        interactive: true,
+        child: CustomScrollView(
+          slivers: [
             SliverToBoxAdapter(
-              child: InkWell(
-                onTap: () => context.push(const IncompleteScreen()),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 2, 20, 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline_rounded, size: 16, color: c.warning),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(l.incompleteBannerTitle(incomplete), style: context.t.meta)),
-                      Icon(Icons.chevron_right_rounded, size: 18, color: c.text3),
-                    ],
+              child: _selection.active
+                  ? SelectionBar(selection: _selection, tracks: tracks)
+                  : ListHeaderBar<SongSort>(
+                      count: l.songsCount(tracks.length),
+                      current: s.songSort,
+                      ascending: s.songAscending,
+                      onSort: s.setSongSort,
+                      onAscending: s.setSongAscending,
+                      options: [
+                        SortOption(SongSort.title, l.sortTitle),
+                        SortOption(SongSort.artist, l.sortArtist),
+                        SortOption(SongSort.album, l.sortAlbum),
+                        SortOption(SongSort.year, l.fieldYear),
+                        SortOption(SongSort.dateAdded, l.sortDateAdded),
+                        SortOption(SongSort.duration, l.detailsDuration),
+                      ],
+                      leading: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LyraIconButton(
+                            icon: Icons.checklist_rounded,
+                            color: c.text,
+                            tooltip: l.select,
+                            onPressed: tracks.isEmpty ? null : _selection.start,
+                          ),
+                          LyraIconButton(
+                            icon: Icons.shuffle_rounded,
+                            color: c.text,
+                            tooltip: l.shuffleAll,
+                            onPressed: () => context.audio.playTracks(tracks, 0, shuffled: true),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+            if (incomplete > 0 && !_selection.active)
+              SliverToBoxAdapter(
+                child: InkWell(
+                  onTap: () => context.push(const IncompleteScreen()),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 2, 20, 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline_rounded, size: 16, color: c.warning),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(l.incompleteBannerTitle(incomplete), style: context.t.meta)),
+                        Icon(Icons.chevron_right_rounded, size: 18, color: c.text3),
+                      ],
+                    ),
                   ),
                 ),
               ),
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 16),
+              sliver: SliverFixedExtentList.builder(
+                itemExtent: 70,
+                itemCount: tracks.length,
+                itemBuilder: (context, i) => _selection.tile(context, tracks, i),
+              ),
             ),
-          SliverPadding(
-            padding: const EdgeInsets.only(bottom: 16),
-            sliver: SliverFixedExtentList.builder(
-              itemExtent: 70,
-              itemCount: tracks.length,
-              itemBuilder: (context, i) =>
-                  TrackTile(track: tracks[i], onTap: () => context.audio.playTracks(tracks, i)),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -634,78 +662,71 @@ class ScanBanner extends StatelessWidget {
   );
 }
 
-/// Carte « Favoris » : accès direct aux morceaux aimés, avec lecture aléatoire.
-class _FavoritesCard extends StatelessWidget {
-  const _FavoritesCard();
+/// Raccourcis de l'Accueil, sur une ligne : Favoris, Les plus écoutés,
+/// Ajoutés récemment et lecture aléatoire de toute la bibliothèque.
+class _Shortcuts extends StatelessWidget {
+  const _Shortcuts();
 
   @override
   Widget build(BuildContext context) {
     final l = context.l;
     final c = context.c;
     final lib = context.watch<LibraryController>();
-    final favorites = lib.resolve(context.watch<CollectionsController>().favoriteIds);
-    final covers = [for (final t in favorites) ?t.art].take(3).toList();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+    final col = context.watch<CollectionsController>();
+
+    Widget item(IconData icon, String label, VoidCallback onTap, {bool accent = false}) => Expanded(
       child: Press(
-        onTap: () => context.push(const FavoritesScreen()),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
-          decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(radiusL)),
-          child: Row(
-            children: [
-              // Petite pile de pochettes, ou un cœur s'il n'y en a pas encore.
-              SizedBox(
-                width: 58,
-                height: 50,
-                child: covers.isEmpty
-                    ? Container(
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: c.primary.withValues(alpha: 0.16),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(Icons.favorite_rounded, color: c.primary),
-                      )
-                    : Stack(
-                        children: [
-                          for (var i = covers.length - 1; i >= 0; i--)
-                            Positioned(
-                              left: i * 4.0,
-                              top: i * 2.0,
-                              child: Artwork(path: covers[i], size: 50 - i * 4.0, radius: 12),
-                            ),
-                        ],
-                      ),
+        onTap: () {
+          Haptics.tap();
+          onTap();
+        },
+        semanticLabel: label,
+        child: Column(
+          children: [
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: accent ? c.primary : c.primary.withValues(alpha: 0.16),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(child: Text(l.favorites, style: context.t.h3, maxLines: 1)),
-                        const SizedBox(width: 6),
-                        Icon(Icons.favorite_rounded, size: 15, color: c.primary),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(l.songsCount(favorites.length), maxLines: 1, style: context.t.meta),
-                  ],
-                ),
-              ),
-              if (favorites.isNotEmpty)
-                LyraIconButton(
-                  icon: Icons.shuffle_rounded,
-                  color: c.text2,
-                  tooltip: l.shuffleAll,
-                  onPressed: () => context.audio.playTracks(favorites, 0, shuffled: true),
-                ),
-              Icon(Icons.chevron_right_rounded, color: c.text2),
-            ],
-          ),
+              child: Icon(icon, size: 26, color: accent ? c.onPrimary : c.primary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: context.t.meta.copyWith(color: c.text, fontWeight: FontWeight.w600, height: 1.2),
+            ),
+          ],
         ),
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 18, 12, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          item(Icons.favorite_rounded, l.favorites, () => context.push(const FavoritesScreen())),
+          item(
+            Icons.trending_up_rounded,
+            l.mostPlayed,
+            () => context.push(TrackListScreen(title: l.mostPlayed, tracks: lib.resolve(col.mostPlayedIds))),
+          ),
+          item(
+            Icons.fiber_new_rounded,
+            l.recentlyAdded,
+            () => context.push(TrackListScreen(title: l.recentlyAdded, tracks: lib.recentlyAdded(limit: 50))),
+          ),
+          item(
+            Icons.shuffle_rounded,
+            l.shuffle,
+            () => context.audio.playTracks(lib.tracks, 0, shuffled: true),
+            accent: true,
+          ),
+        ],
       ),
     );
   }

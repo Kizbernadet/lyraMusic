@@ -16,6 +16,7 @@ import 'home_screen.dart';
 import 'incomplete_screen.dart';
 import 'player_layout_screen.dart';
 import 'themes_screen.dart';
+import 'trash_screen.dart';
 import 'workshop_screen.dart';
 
 /// Réglages.
@@ -263,6 +264,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                 title: l.history,
                 value: l.recentlyPlayed,
                 onTap: () => context.push(const HistoryScreen()),
+              ),
+              SettingRow(
+                icon: Icons.delete_outline_rounded,
+                title: l.trash,
+                value: l.trashSub,
+                onTap: () => context.push(const TrashScreen()),
               ),
             ],
           ),

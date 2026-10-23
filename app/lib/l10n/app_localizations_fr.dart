@@ -1488,4 +1488,279 @@ class L10nFr extends L10n {
 
   @override
   String get lcError => 'L\'export a échoué';
+
+  @override
+  String get deleteFromDevice => 'Supprimer du téléphone';
+
+  @override
+  String get deleteTrackTitle => 'Supprimer ce morceau ?';
+
+  @override
+  String deleteTrackBody(String name) {
+    return '« $name » sera supprimé définitivement du téléphone.';
+  }
+
+  @override
+  String deleteTracksTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Supprimer $count morceaux ?',
+      one: 'Supprimer 1 morceau ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteTracksBody =>
+      'Ces fichiers seront supprimés définitivement du téléphone.';
+
+  @override
+  String get deleteAlbum => 'Supprimer l\'album';
+
+  @override
+  String get deleteAlbumTitle => 'Supprimer cet album ?';
+
+  @override
+  String deleteAlbumBody(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '« $name » et ses $count morceaux seront supprimés définitivement du téléphone.',
+      one:
+          '« $name » et son morceau seront supprimés définitivement du téléphone.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deletedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count morceaux supprimés',
+      one: '1 morceau supprimé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteError => 'Les fichiers n\'ont pas pu être supprimés.';
+
+  @override
+  String get editAlbum => 'Modifier l\'album';
+
+  @override
+  String get fieldTrackTotal => 'Nombre de pistes';
+
+  @override
+  String get multipleValues => 'Plusieurs valeurs';
+
+  @override
+  String albumEditInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Les modifications sont écrites dans les $count morceaux de l\'album.',
+      one: 'Les modifications sont écrites dans le morceau de l\'album.',
+    );
+    return '$_temp0 Les champs non modifiés restent tels quels.';
+  }
+
+  @override
+  String albumSaving(int done, int total) {
+    return 'Écriture $done / $total…';
+  }
+
+  @override
+  String get albumSaved => 'Album mis à jour';
+
+  @override
+  String albumSavePartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count morceaux n\'ont pas pu être modifiés',
+      one: '1 morceau n\'a pas pu être modifié',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String alreadyInPlaylist(String name) {
+    return 'Déjà dans $name';
+  }
+
+  @override
+  String skippedDuplicates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count doublons ignorés',
+      one: '1 doublon ignoré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inPlaylist => 'Déjà dans la playlist';
+
+  @override
+  String get select => 'Sélectionner';
+
+  @override
+  String get selectAll => 'Tout sélectionner';
+
+  @override
+  String get clearSelection => 'Annuler la sélection';
+
+  @override
+  String get back5 => 'Reculer de 5 secondes';
+
+  @override
+  String get syncSpeed => 'Vitesse de lecture';
+
+  @override
+  String get syncSpeedHint =>
+      'Ralentissez le morceau pour toucher plus précisément : les temps restent exacts.';
+
+  @override
+  String get syncLatency => 'Temps de réaction';
+
+  @override
+  String get syncLatencyHint =>
+      'Retiré de chaque appui pour compenser le délai entre l\'écoute et le toucher.';
+
+  @override
+  String get syncSetHere => 'Caler ici';
+
+  @override
+  String get syncSettings => 'Réglages de synchro';
+
+  @override
+  String movedToTrash(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count morceaux mis à la corbeille',
+      one: '1 morceau mis à la corbeille',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get undo => 'Annuler';
+
+  @override
+  String restoredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count morceaux restaurés',
+      one: '1 morceau restauré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trash => 'Corbeille';
+
+  @override
+  String get trashSub => 'Morceaux supprimés, restaurables pendant 30 jours';
+
+  @override
+  String get trashEmptyTitle => 'La corbeille est vide';
+
+  @override
+  String get trashEmptyBody =>
+      'Les morceaux supprimés restent ici 30 jours avant d\'être effacés par le téléphone.';
+
+  @override
+  String get trashUnsupported =>
+      'La corbeille nécessite Android 11 ou plus récent. Sur ce téléphone, la suppression est définitive.';
+
+  @override
+  String trashExpires(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Effacé dans $days jours',
+      one: 'Effacé dans 1 jour',
+      zero: 'Effacé aujourd\'hui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restore => 'Restaurer';
+
+  @override
+  String get restoreAll => 'Tout restaurer';
+
+  @override
+  String get emptyTrash => 'Vider la corbeille';
+
+  @override
+  String get deleteForever => 'Supprimer définitivement';
+
+  @override
+  String get emptyTrashTitle => 'Vider la corbeille ?';
+
+  @override
+  String get emptyTrashBody =>
+      'Ces morceaux seront supprimés définitivement. Cette action est irréversible.';
+
+  @override
+  String get addAnyway => 'Ajouter quand même';
+
+  @override
+  String removedFromPlaylist(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count morceaux retirés',
+      one: '1 morceau retiré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncBreak => 'Pause';
+
+  @override
+  String get syncBreakLine => 'Pause instrumentale';
+
+  @override
+  String get syncBreakHint =>
+      'Marquer la fin de la ligne qui vient de se terminer (passage instrumental)';
+
+  @override
+  String get syncRemoveBreak => 'Retirer la pause';
+
+  @override
+  String get syncSnap => 'Aimanter';
+
+  @override
+  String get syncSnapAll => 'Tout aimanter';
+
+  @override
+  String syncSnapped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lignes ajustées',
+      one: '1 ligne ajustée',
+      zero: 'Aucune ligne déplacée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncWaveLoading => 'Analyse du son…';
+
+  @override
+  String get syncWaveHint =>
+      'Glissez sur l\'onde pour déplacer la ligne. Le début d\'une voix se voit comme une montée.';
 }

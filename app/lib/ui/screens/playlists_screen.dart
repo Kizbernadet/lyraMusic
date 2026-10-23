@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/kit.dart';
 import '../widgets/library_widgets.dart';
+import '../widgets/selection.dart';
 import '../widgets/track_tile.dart';
 import 'history_screen.dart';
 import 'search_screen.dart';
@@ -220,11 +221,9 @@ Future<void> createPlaylist(BuildContext context) async {
 }
 
 Future<void> addSongsTo(BuildContext context, Playlist p) async {
-  final l = context.l;
-  final result = await context.pushFull<PickerResult>(const TrackPickerScreen(askName: false));
+  final result = await context.pushFull<PickerResult>(TrackPickerScreen(askName: false, exclude: p.trackIds.toSet()));
   if (result == null || result.ids.isEmpty || !context.mounted) return;
-  await context.collections.addTracks(p.id, result.ids);
-  if (context.mounted) context.toast(l.addedToPlaylist(p.name));
+  await addToPlaylist(context, p, result.ids);
 }
 
 /// Suppression avec confirmation ; les fichiers audio ne sont jamais supprimés (CA-24).
@@ -244,10 +243,33 @@ Future<bool> confirmDeletePlaylist(BuildContext context, Playlist p) async {
 }
 
 /// Détail d'une playlist, ou des favoris (onglet Favoris).
-class PlaylistScreen extends StatelessWidget {
+class PlaylistScreen extends StatefulWidget {
   final int? playlistId; // null = favoris
   const PlaylistScreen({super.key, required int this.playlistId});
   const PlaylistScreen.favorites({super.key}) : playlistId = null;
+
+  @override
+  State<PlaylistScreen> createState() => _PlaylistScreenState();
+}
+
+class _PlaylistScreenState extends State<PlaylistScreen> {
+  final _selection = TrackSelection();
+
+  int? get playlistId => widget.playlistId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selection.addListener(_onSelection);
+  }
+
+  void _onSelection() => setState(() {});
+
+  @override
+  void dispose() {
+    _selection.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +309,36 @@ class PlaylistScreen extends StatelessWidget {
       onPlay: tracks.isEmpty ? null : () => context.audio.playTracks(tracks, 0, shuffled: false),
     );
 
+    // Sélection : retirer plusieurs morceaux de la playlist ou des favoris d'un coup.
+    final collections = context.collections;
+    final selectionHead = _selection.active
+        ? SelectionBar(
+            selection: _selection,
+            tracks: tracks,
+            actions: (picked) => [
+              MenuExtra(
+                isFavorites ? Icons.heart_broken_rounded : Icons.playlist_remove_rounded,
+                isFavorites ? l.removeFromFavorites : l.removeFromPlaylist,
+                () async {
+                  final ids = {for (final t in picked) t.id};
+                  if (isFavorites) {
+                    await collections.removeFavorites(ids);
+                  } else {
+                    await collections.removeTracks(playlist.id, ids);
+                  }
+                  if (context.mounted) context.toast(l.removedFromPlaylist(ids.length));
+                },
+                danger: true,
+              ),
+            ],
+          )
+        : SectionHead(
+            l.tabSongs,
+            action: l.select,
+            onAction: _selection.start,
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+          );
+
     Widget body;
     if (tracks.isEmpty) {
       body = ListView(
@@ -310,10 +362,23 @@ class PlaylistScreen extends StatelessWidget {
           ),
         ],
       );
+    } else if (_selection.active) {
+      body = CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: header),
+          SliverToBoxAdapter(child: selectionHead),
+          SliverList.builder(
+            itemCount: tracks.length,
+            itemBuilder: (context, i) => _selection.tile(context, tracks, i),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
+      );
     } else if (!isFavorites) {
       body = CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: header),
+          SliverToBoxAdapter(child: selectionHead),
           SliverReorderableList(
             itemCount: entries.length,
             onReorderItem: (from, to) => context.collections.move(playlist.id, entries[from].$1, entries[to].$1),
@@ -343,9 +408,12 @@ class PlaylistScreen extends StatelessWidget {
     } else {
       body = ListView.builder(
         padding: const EdgeInsets.only(bottom: 24),
-        itemCount: tracks.length + 1,
-        itemBuilder: (context, i) =>
-            i == 0 ? header : TrackTile(track: tracks[i - 1], onTap: () => context.audio.playTracks(tracks, i - 1)),
+        itemCount: tracks.length + 2,
+        itemBuilder: (context, i) => switch (i) {
+          0 => header,
+          1 => selectionHead,
+          _ => _selection.tile(context, tracks, i - 2),
+        },
       );
     }
 

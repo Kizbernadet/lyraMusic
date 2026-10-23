@@ -1470,4 +1470,278 @@ class L10nEn extends L10n {
 
   @override
   String get lcError => 'Export failed';
+
+  @override
+  String get deleteFromDevice => 'Delete from phone';
+
+  @override
+  String get deleteTrackTitle => 'Delete this song?';
+
+  @override
+  String deleteTrackBody(String name) {
+    return '\"$name\" will be permanently deleted from your phone.';
+  }
+
+  @override
+  String deleteTracksTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Delete $count songs?',
+      one: 'Delete 1 song?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteTracksBody =>
+      'These files will be permanently deleted from your phone.';
+
+  @override
+  String get deleteAlbum => 'Delete album';
+
+  @override
+  String get deleteAlbumTitle => 'Delete this album?';
+
+  @override
+  String deleteAlbumBody(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '\"$name\" and its $count songs will be permanently deleted from your phone.',
+      one:
+          '\"$name\" and its song will be permanently deleted from your phone.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deletedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs deleted',
+      one: '1 song deleted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteError => 'The files could not be deleted.';
+
+  @override
+  String get editAlbum => 'Edit album';
+
+  @override
+  String get fieldTrackTotal => 'Number of tracks';
+
+  @override
+  String get multipleValues => 'Multiple values';
+
+  @override
+  String albumEditInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Changes are written to the album\'s $count songs.',
+      one: 'Changes are written to the album\'s song.',
+    );
+    return '$_temp0 Fields you don\'t touch stay as they are.';
+  }
+
+  @override
+  String albumSaving(int done, int total) {
+    return 'Writing $done / $total…';
+  }
+
+  @override
+  String get albumSaved => 'Album updated';
+
+  @override
+  String albumSavePartial(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs could not be changed',
+      one: '1 song could not be changed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String alreadyInPlaylist(String name) {
+    return 'Already in $name';
+  }
+
+  @override
+  String skippedDuplicates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicates skipped',
+      one: '1 duplicate skipped',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inPlaylist => 'Already in the playlist';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get selectAll => 'Select all';
+
+  @override
+  String get clearSelection => 'Cancel selection';
+
+  @override
+  String get back5 => 'Back 5 seconds';
+
+  @override
+  String get syncSpeed => 'Playback speed';
+
+  @override
+  String get syncSpeedHint =>
+      'Slow down the song to tap more precisely: times stay exact.';
+
+  @override
+  String get syncLatency => 'Reaction time';
+
+  @override
+  String get syncLatencyHint =>
+      'Subtracted from each tap to make up for the delay between hearing and touching.';
+
+  @override
+  String get syncSetHere => 'Set to now';
+
+  @override
+  String get syncSettings => 'Sync settings';
+
+  @override
+  String movedToTrash(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs moved to the trash',
+      one: '1 song moved to the trash',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String restoredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs restored',
+      one: '1 song restored',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trash => 'Trash';
+
+  @override
+  String get trashSub => 'Deleted songs, restorable for 30 days';
+
+  @override
+  String get trashEmptyTitle => 'The trash is empty';
+
+  @override
+  String get trashEmptyBody =>
+      'Deleted songs stay here for 30 days before your phone erases them.';
+
+  @override
+  String get trashUnsupported =>
+      'The trash needs Android 11 or later. On this phone, deleting is permanent.';
+
+  @override
+  String trashExpires(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Erased in $days days',
+      one: 'Erased in 1 day',
+      zero: 'Erased today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String get restoreAll => 'Restore all';
+
+  @override
+  String get emptyTrash => 'Empty trash';
+
+  @override
+  String get deleteForever => 'Delete permanently';
+
+  @override
+  String get emptyTrashTitle => 'Empty the trash?';
+
+  @override
+  String get emptyTrashBody =>
+      'These songs will be permanently deleted. This can\'t be undone.';
+
+  @override
+  String get addAnyway => 'Add anyway';
+
+  @override
+  String removedFromPlaylist(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count songs removed',
+      one: '1 song removed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncBreak => 'Break';
+
+  @override
+  String get syncBreakLine => 'Instrumental break';
+
+  @override
+  String get syncBreakHint =>
+      'Mark the end of the line that just ended (instrumental passage)';
+
+  @override
+  String get syncRemoveBreak => 'Remove the break';
+
+  @override
+  String get syncSnap => 'Snap to voice';
+
+  @override
+  String get syncSnapAll => 'Snap all lines';
+
+  @override
+  String syncSnapped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines adjusted',
+      one: '1 line adjusted',
+      zero: 'No line moved',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncWaveLoading => 'Analysing the sound…';
+
+  @override
+  String get syncWaveHint =>
+      'Drag the waveform to move the line. A voice starting shows up as a rise.';
 }

@@ -183,6 +183,31 @@ class LibraryController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Après la modification d'un album entier : une seule mise à jour de l'interface.
+  Future<void> replaceTracks(List<Track> updated) async {
+    final byId = {for (final t in updated) t.id: t};
+    await db.upsertTracks(updated);
+    _setTracks([for (final t in _tracks) byId[t.id] ?? t]);
+    notifyListeners();
+  }
+
+  /// Après la suppression des fichiers du téléphone. Avec [forget] à false
+  /// (mise à la corbeille), favoris, playlists et paroles sont gardés : ils
+  /// reviennent si le morceau est restauré.
+  Future<void> removeTracks(Iterable<int> ids, {bool forget = true}) async {
+    final gone = ids.toSet();
+    if (forget) {
+      await db.forgetTracks(gone.toList());
+    } else {
+      await db.deleteTracks(gone.toList());
+    }
+    _setTracks(_tracks.where((t) => !gone.contains(t.id)).toList());
+    notifyListeners();
+  }
+
+  /// Morceaux effacés de la corbeille : on oublie aussi favoris, playlists, paroles…
+  Future<void> forget(List<int> ids) => db.forgetTracks(ids);
+
   // ---- Vues dérivées ----
 
   final Map<String, List<Track>> _sorted = {};

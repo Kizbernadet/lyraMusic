@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../widgets/artwork.dart';
 import '../widgets/common.dart';
 import '../widgets/kit.dart';
+import '../widgets/track_tile.dart';
 
 class PickerResult {
   final String? name;
@@ -17,7 +18,10 @@ class PickerResult {
 /// Choix de morceaux : création de playlist (prototype 14) ou ajout à une playlist.
 class TrackPickerScreen extends StatefulWidget {
   final bool askName;
-  const TrackPickerScreen({super.key, required this.askName});
+
+  /// Morceaux déjà dans la playlist : affichés cochés et grisés, jamais ajoutés deux fois.
+  final Set<int> exclude;
+  const TrackPickerScreen({super.key, required this.askName, this.exclude = const {}});
 
   @override
   State<TrackPickerScreen> createState() => _TrackPickerScreenState();
@@ -119,9 +123,10 @@ class _TrackPickerScreenState extends State<TrackPickerScreen> {
               itemCount: tracks.length,
               itemBuilder: (context, i) {
                 final t = tracks[i];
+                final present = widget.exclude.contains(t.id);
                 final picked = _picked.contains(t.id);
                 return InkWell(
-                  onTap: () => setState(() => picked ? _picked.remove(t.id) : _picked.add(t.id)),
+                  onTap: present ? null : () => setState(() => picked ? _picked.remove(t.id) : _picked.add(t.id)),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 6, 12, 6),
                     child: Row(
@@ -137,10 +142,12 @@ class _TrackPickerScreenState extends State<TrackPickerScreen> {
                                 t.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: context.t.title.copyWith(color: picked ? c.primary : c.text),
+                                style: context.t.title.copyWith(
+                                  color: present ? c.text3 : (picked ? c.primary : c.text),
+                                ),
                               ),
                               Text(
-                                artistName(context, t.artist),
+                                present ? l.inPlaylist : artistName(context, t.artist),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: context.t.meta,
@@ -148,17 +155,7 @@ class _TrackPickerScreenState extends State<TrackPickerScreen> {
                             ],
                           ),
                         ),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 160),
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: picked ? c.primary : Colors.transparent,
-                            border: Border.all(color: picked ? c.primary : c.dividerStrong, width: 1.6),
-                          ),
-                          child: picked ? Icon(Icons.check_rounded, size: 15, color: c.onPrimary) : null,
-                        ),
+                        CheckDot(checked: picked || present, disabled: present),
                         const SizedBox(width: 8),
                       ],
                     ),

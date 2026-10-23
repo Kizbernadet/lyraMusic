@@ -111,6 +111,19 @@ class LyraDb {
     }
   }
 
+  /// Après la suppression des fichiers : on oublie aussi favoris, playlists,
+  /// historique et paroles de ces morceaux.
+  Future<void> forgetTracks(List<int> ids) async {
+    await deleteTracks(ids);
+    for (var i = 0; i < ids.length; i += 500) {
+      final chunk = ids.sublist(i, i + 500 > ids.length ? ids.length : i + 500);
+      final where = 'track_id IN (${List.filled(chunk.length, '?').join(',')})';
+      for (final table in ['playlist_tracks', 'favorites', 'history', 'user_lyrics']) {
+        await db.delete(table, where: where, whereArgs: chunk);
+      }
+    }
+  }
+
   // ---- Playlists ----
 
   Future<List<Playlist>> playlists() async {

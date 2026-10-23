@@ -9,14 +9,16 @@ import '../widgets/artwork.dart';
 import '../widgets/common.dart';
 import '../widgets/kit.dart';
 import '../widgets/library_widgets.dart';
+import '../widgets/selection.dart';
 import '../widgets/track_tile.dart';
+import 'album_editor_screen.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
 
 enum CollectionKind { album, artist, genre, folder }
 
 /// Page d'un album, d'un artiste, d'un genre ou d'un dossier.
-class CollectionScreen extends StatelessWidget {
+class CollectionScreen extends StatefulWidget {
   final CollectionKind kind;
   final String id; // clé d'album, nom replié (artiste / genre) ou chemin du dossier
 
@@ -26,6 +28,22 @@ class CollectionScreen extends StatelessWidget {
   factory CollectionScreen.artist(Group g) => CollectionScreen._(CollectionKind.artist, fold(g.name ?? ''));
   factory CollectionScreen.genre(Group g) => CollectionScreen._(CollectionKind.genre, fold(g.name ?? ''));
   factory CollectionScreen.folder(Group g) => CollectionScreen._(CollectionKind.folder, g.name!);
+
+  @override
+  State<CollectionScreen> createState() => _CollectionScreenState();
+}
+
+class _CollectionScreenState extends State<CollectionScreen> {
+  final _selection = TrackSelection();
+
+  CollectionKind get kind => widget.kind;
+  String get id => widget.id;
+
+  @override
+  void dispose() {
+    _selection.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,52 +99,86 @@ class CollectionScreen extends StatelessWidget {
             tooltip: l.navSearch,
             onPressed: () => context.push(const SearchScreen()),
           ),
+          if (kind == CollectionKind.album && tracks.isNotEmpty)
+            LyraIconButton(icon: Icons.edit_outlined, color: c.text, tooltip: l.editAlbum, onPressed: _editAlbum),
           LyraIconButton(
             icon: Icons.more_horiz_rounded,
             color: c.text,
             tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
-            onPressed: tracks.isEmpty ? null : () => _menu(context, tracks),
+            onPressed: tracks.isEmpty ? null : () => _menu(context, tracks, title),
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: DetailHeader(
-              cover: cover ?? Artwork(path: art, size: 210, radius: 22, seed: title, glow: true),
-              title: title,
-              meta: meta,
-              onShuffle: tracks.isEmpty ? null : () => context.audio.playTracks(tracks, 0, shuffled: true),
-              onPlay: tracks.isEmpty ? null : () => context.audio.playTracks(tracks, 0, shuffled: false),
-            ),
-          ),
-          if (albums.length > 1) ...[
-            SliverToBoxAdapter(child: SectionHead(l.tabAlbums, padding: const EdgeInsets.fromLTRB(20, 12, 20, 12))),
+      body: ListenableBuilder(
+        listenable: _selection,
+        builder: (context, _) => CustomScrollView(
+          slivers: [
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: 196,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: albums.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 16),
-                  itemBuilder: (context, i) => AlbumCard(album: albums[i], size: 132, showYear: true),
-                ),
+              child: DetailHeader(
+                cover: cover ?? Artwork(path: art, size: 210, radius: 22, seed: title, glow: true),
+                title: title,
+                meta: meta,
+                onShuffle: tracks.isEmpty ? null : () => context.audio.playTracks(tracks, 0, shuffled: true),
+                onPlay: tracks.isEmpty ? null : () => context.audio.playTracks(tracks, 0, shuffled: false),
               ),
             ),
+            if (albums.length > 1) ...[
+              SliverToBoxAdapter(child: SectionHead(l.tabAlbums, padding: const EdgeInsets.fromLTRB(20, 12, 20, 12))),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 196,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: albums.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 16),
+                    itemBuilder: (context, i) => AlbumCard(album: albums[i], size: 132, showYear: true),
+                  ),
+                ),
+              ),
+            ],
+            SliverToBoxAdapter(
+              child: _selection.active
+                  ? SelectionBar(selection: _selection, tracks: tracks)
+                  : SectionHead(
+                      l.tabSongs,
+                      action: tracks.isEmpty ? null : l.select,
+                      onAction: _selection.start,
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+                    ),
+            ),
+            SliverList.builder(
+              itemCount: tracks.length,
+              itemBuilder: (context, i) => _selection.tile(context, tracks, i),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
-          SliverToBoxAdapter(child: SectionHead(l.tabSongs, padding: const EdgeInsets.fromLTRB(20, 12, 20, 4))),
-          SliverList.builder(
-            itemCount: tracks.length,
-            itemBuilder: (context, i) => TrackTile(track: tracks[i], onTap: () => context.audio.playTracks(tracks, i)),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
+        ),
       ),
     );
   }
 
-  void _menu(BuildContext context, List<Track> tracks) {
+  Future<void> _editAlbum() async {
+    final key = await context.pushFull<String>(AlbumEditorScreen(albumKey: id));
+    if (key == null || key == id || !mounted) return;
+    // Le nom ou l'artiste a changé : l'album a une nouvelle clé.
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => CollectionScreen._(CollectionKind.album, key)));
+  }
+
+  Future<void> _deleteAlbum(List<Track> tracks, String name) async {
+    final l = context.l;
+    final ok = await deleteTracks(
+      context,
+      tracks,
+      title: l.deleteAlbumTitle,
+      body: l.deleteAlbumBody(name, tracks.length),
+    );
+    if (ok && mounted) Navigator.of(context).pop();
+  }
+
+  void _menu(BuildContext context, List<Track> tracks, String title) {
     final l = context.l;
     showLyraSheet(
       context,
@@ -159,6 +211,25 @@ class CollectionScreen extends StatelessWidget {
               showAddToPlaylist(context, tracks);
             },
           ),
+          if (kind == CollectionKind.album) ...[
+            SheetAction(
+              icon: Icons.edit_outlined,
+              label: l.editAlbum,
+              onTap: () {
+                Navigator.of(sheet).pop();
+                _editAlbum();
+              },
+            ),
+            SheetAction(
+              icon: Icons.delete_outline_rounded,
+              label: l.deleteAlbum,
+              color: sheet.c.error,
+              onTap: () {
+                Navigator.of(sheet).pop();
+                _deleteAlbum(tracks, title);
+              },
+            ),
+          ],
         ],
       ),
     );

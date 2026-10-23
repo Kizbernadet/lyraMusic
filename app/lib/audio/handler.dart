@@ -225,6 +225,18 @@ class LyraAudioHandler extends BaseAudioHandler with SeekHandler {
     _save();
   }
 
+  /// Retire de la file des morceaux supprimés du téléphone.
+  Future<void> removeTracks(Set<int> ids) async {
+    final list = tracks.value;
+    if (list.every((t) => ids.contains(t.id))) {
+      if (list.isNotEmpty) await clearAll();
+      return;
+    }
+    for (var i = list.length - 1; i >= 0; i--) {
+      if (ids.contains(list[i].id)) await removeFromQueue(i);
+    }
+  }
+
   Future<void> moveInQueue(int from, int to) async {
     if (from == to) return;
     final list = List.of(tracks.value);

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lyra/data/flac_tags.dart';
 import 'package:lyra/data/tag_writer.dart';
 
 /// Fichiers audio minimaux générés octet par octet (sans ffmpeg).
@@ -218,6 +219,37 @@ void main() {
     expect(raw, contains('Un commentaire'));
     expect(raw, contains('SOURCE'));
     expect(raw, isNot(contains('Ancien titre')));
+  });
+
+  test('flac : paroles, TRACKTOTAL et champs inconnus sont conservés après modification', () {
+    const lrc = '[00:01.00]Hello\n[00:02.00]World';
+    final base = rewriteFlacTags(flacNoTags(), {
+      'TITLE': ['Ancien titre'],
+      'LYRICS': [lrc],
+      'TRACKTOTAL': ['12'],
+      'DISCNUMBER': ['2'],
+      'REPLAYGAIN_TRACK_GAIN': ['-6.5 dB'],
+      'DATE': ['2019-05-03'],
+    });
+    final file = File('${dir.path}/lyrics.flac')..writeAsBytesSync(base);
+    applyEdit(file.path, const TagEdit(title: 'Nouveau titre', artist: 'Moi', year: 2019));
+    final comments = {for (final c in readFlacComments(file.readAsBytesSync())) c.$1: c.$2};
+    expect(comments['TITLE'], 'Nouveau titre');
+    expect(comments['ARTIST'], 'Moi');
+    expect(comments['LYRICS'], lrc);
+    expect(comments['TRACKTOTAL'], '12');
+    expect(comments['DISCNUMBER'], '2');
+    expect(comments['REPLAYGAIN_TRACK_GAIN'], '-6.5 dB');
+    expect(comments['DATE'], '2019-05-03');
+    expect(readMetadata(file).lyrics, contains('World'));
+  });
+
+  test("flac : le nombre de pistes de l'album est écrit", () {
+    final file = File('${dir.path}/total.flac')..writeAsBytesSync(flacNoTags());
+    applyEdit(file.path, const TagEdit(title: 'T', trackNumber: 4, trackTotal: 11));
+    final comments = {for (final c in readFlacComments(file.readAsBytesSync())) c.$1: c.$2};
+    expect(comments['TRACKNUMBER'], '4');
+    expect(comments['TRACKTOTAL'], '11');
   });
 
   for (final entry in cases.entries) {

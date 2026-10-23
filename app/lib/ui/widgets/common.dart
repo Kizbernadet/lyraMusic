@@ -16,6 +16,7 @@ class ShellNav {
 
   /// 0 Suggestions · 1 Titres · 2 Artistes · 3 Albums · 4 Dossiers · 5 Genres
   final ValueNotifier<int> homeTab = ValueNotifier(0);
+
   /// 0 Sans paroles · 1 À synchroniser · 2 Synchronisées · 3 Infos manquantes
   final ValueNotifier<int> workshopTab = ValueNotifier(0);
   final List<GlobalKey<NavigatorState>> navigators = List.generate(4, (_) => GlobalKey<NavigatorState>());
@@ -39,7 +40,8 @@ extension Ctx on BuildContext {
   SettingsController get settings => read<SettingsController>();
   ShellNav get shell => read<ShellNav>();
 
-  void toast(String message, {IconData icon = Icons.check_rounded}) => showLyraToast(this, message, icon: icon);
+  void toast(String message, {IconData icon = Icons.check_rounded, String? action, VoidCallback? onAction}) =>
+      showLyraToast(this, message, icon: icon, action: action, onAction: onAction);
 
   /// Écran dans l'onglet courant (mini-lecteur et onglets restent visibles).
   Future<T?> push<T>(Widget page) => Navigator.of(this).push<T>(MaterialPageRoute(builder: (_) => page));

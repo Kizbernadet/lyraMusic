@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../models/track.dart';
+import 'flac_tags.dart';
 import 'id3_preserve.dart';
 import 'media_store.dart';
 import 'mp4_skeleton.dart';
@@ -26,6 +27,9 @@ class TagEdit {
   final int? year;
   final int? trackNumber;
 
+  /// Nombre de pistes de l'album : null = inchangé.
+  final int? trackTotal;
+
   /// true si la pochette a été remplacée ou supprimée.
   final bool artChanged;
   final Uint8List? artBytes; // null + artChanged = suppression
@@ -39,6 +43,7 @@ class TagEdit {
     this.genre,
     this.year,
     this.trackNumber,
+    this.trackTotal,
     this.artChanged = false,
     this.artBytes,
     this.artMime = 'image/jpeg',
@@ -62,9 +67,11 @@ class TagWriteException implements Exception {
 /// 4. remplacement du contenu du fichier d'origine ;
 /// 5. vérification, et restauration de la sauvegarde en cas d'échec.
 /// Le fichier d'origine n'est jamais laissé dans un état intermédiaire connu.
-Future<Track> writeTags(Track track, TagEdit edit, {required String artDir}) async {
+/// [askPermission] à false quand l'autorisation a déjà été demandée pour un
+/// groupe de fichiers (album entier, voir [requestWriteAll]).
+Future<Track> writeTags(Track track, TagEdit edit, {required String artDir, bool askPermission = true}) async {
   final sdk = await MediaStoreBridge.sdkInt();
-  if (sdk >= 30) {
+  if (askPermission && sdk >= 30) {
     final granted = await MediaStoreBridge.requestWrite([track.id]);
     if (!granted) throw TagWriteException(TagWriteError.denied);
   }
@@ -126,6 +133,13 @@ Future<Track> writeTags(Track track, TagEdit edit, {required String artDir}) asy
   return updated;
 }
 
+/// Une seule demande d'autorisation pour plusieurs fichiers (Android 11+).
+Future<void> requestWriteAll(List<Track> tracks) async {
+  if (await MediaStoreBridge.sdkInt() < 30) return;
+  final granted = await MediaStoreBridge.requestWrite([for (final t in tracks) t.id]);
+  if (!granted) throw TagWriteException(TagWriteError.denied);
+}
+
 Future<void> _delete(List<File> files) async {
   for (final f in files) {
     try {
@@ -136,6 +150,10 @@ Future<void> _delete(List<File> files) async {
 
 void applyEdit(String path, TagEdit e) {
   final file = File(path);
+  if (p.extension(path).toLowerCase() == '.flac') {
+    file.writeAsBytesSync(flacEdit(file.readAsBytesSync(), e), flush: true);
+    return;
+  }
   if (p.extension(path).toLowerCase() == '.m4a') {
     // Structure que la bibliothèque ne sait pas parcourir : on refuse proprement.
     ensureWritableLayout(path);
@@ -152,6 +170,7 @@ void applyEdit(String path, TagEdit e) {
     m.setYear(e.year == null ? null : DateTime(e.year!));
     m.setGenres(e.genre == null ? [] : [e.genre!]);
     m.setTrackNumber(e.trackNumber);
+    if (e.trackTotal != null) m.setTrackTotal(e.trackTotal);
     if (e.artChanged) {
       m.setPictures(e.artBytes == null ? [] : [Picture(e.artBytes!, e.artMime, PictureType.coverFront)]);
     }
@@ -168,16 +187,28 @@ void applyEdit(String path, TagEdit e) {
       Id3v4Writer().write(file, m);
       final injected = injectFrames(file.readAsBytesSync(), keep);
       if (injected != null) file.writeAsBytesSync(injected, flush: true);
-    case VorbisMetadata m:
-      common(m);
-      // setArtist(null) ne vide pas le champ pour Vorbis : on l'affecte directement.
-      m.artist = e.artist == null ? [] : [e.artist!];
-      m.albumArtist = e.albumArtist == null ? [] : [e.albumArtist!];
-      replaceMetadata(file, m);
     default:
       common(meta);
       replaceMetadata(file, meta);
   }
+}
+
+/// FLAC : seuls les champs gérés par l'éditeur sont remplacés (voir flac_tags.dart).
+Uint8List flacEdit(Uint8List data, TagEdit e) {
+  List<String> one(Object? v) => v == null ? const [] : ['$v'];
+  final existing = readFlacComments(data);
+  final date = existing.where((c) => c.$1.toUpperCase() == 'DATE').map((c) => c.$2).firstOrNull;
+  return rewriteFlacTags(data, {
+    'TITLE': one(e.title),
+    'ARTIST': one(e.artist),
+    'ALBUMARTIST': one(e.albumArtist),
+    'ALBUM': one(e.album),
+    'GENRE': one(e.genre),
+    // Une date complète de la même année (« 2019-05-03 ») est gardée telle quelle.
+    'DATE': e.year != null && date != null && date.startsWith('${e.year}') ? [date] : one(e.year),
+    'TRACKNUMBER': one(e.trackNumber),
+    if (e.trackTotal != null) ...{'TRACKTOTAL': one(e.trackTotal), 'TOTALTRACKS': const <String>[]},
+  }, pictures: !e.artChanged ? null : [if (e.artBytes != null) FlacPicture(e.artBytes!, e.artMime)]);
 }
 
 void verify(String path, String expectedTitle) {

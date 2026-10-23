@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../data/media_store.dart';
 import '../../models/track.dart';
 import '../../state/collections.dart';
 import '../../state/library.dart';
+import '../../state/lyrics_store.dart';
 import '../../utils/text.dart';
 import '../screens/collection_screen.dart';
 import '../screens/details_screen.dart';
@@ -25,6 +27,12 @@ class TrackTile extends StatelessWidget {
   final bool showPlay;
   final bool showDuration;
 
+  /// Mode sélection : null hors sélection, sinon coché ou non.
+  final bool? selected;
+
+  /// Appui long : menu du morceau par défaut.
+  final VoidCallback? onLongPress;
+
   const TrackTile({
     super.key,
     required this.track,
@@ -34,6 +42,8 @@ class TrackTile extends StatelessWidget {
     this.dense = false,
     this.showPlay = true,
     this.showDuration = true,
+    this.selected,
+    this.onLongPress,
     // Anciens paramètres, conservés pour compatibilité.
     int? number,
     bool showAlbum = true,
@@ -51,7 +61,7 @@ class TrackTile extends StatelessWidget {
         final sub = [artistName(context, track.artist), if (showDuration) formatDuration(track.duration)].join('  |  ');
         return InkWell(
           onTap: onTap,
-          onLongPress: () => showTrackMenu(context, track, extras: extras),
+          onLongPress: onLongPress ?? () => showTrackMenu(context, track, extras: extras),
           child: Padding(
             padding: EdgeInsets.fromLTRB(20, dense ? 6 : 8, 8, dense ? 6 : 8),
             child: Row(
@@ -87,31 +97,61 @@ class TrackTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                trailing ??
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (showPlay)
-                          RowPlayButton(
-                            playing: playing,
-                            current: isCurrent,
-                            onTap: isCurrent ? (playing ? context.audio.pause : context.audio.play) : onTap,
+                if (selected != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 14, 0),
+                    child: CheckDot(checked: selected!),
+                  )
+                else
+                  trailing ??
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (showPlay)
+                            RowPlayButton(
+                              playing: playing,
+                              current: isCurrent,
+                              onTap: isCurrent ? (playing ? context.audio.pause : context.audio.play) : onTap,
+                            ),
+                          LyraIconButton(
+                            icon: Icons.more_vert_rounded,
+                            size: 20,
+                            box: 40,
+                            color: c.text2,
+                            tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
+                            onPressed: () => showTrackMenu(context, track, extras: extras),
                           ),
-                        LyraIconButton(
-                          icon: Icons.more_vert_rounded,
-                          size: 20,
-                          box: 40,
-                          color: c.text2,
-                          tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
-                          onPressed: () => showTrackMenu(context, track, extras: extras),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+}
+
+/// Case ronde cochée / non cochée (sélection de morceaux).
+class CheckDot extends StatelessWidget {
+  final bool checked;
+  final bool disabled;
+  const CheckDot({super.key, required this.checked, this.disabled = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final on = checked ? (disabled ? c.text3 : c.primary) : Colors.transparent;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 160),
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: on,
+        border: Border.all(color: checked ? on : c.dividerStrong, width: 1.6),
+      ),
+      child: checked ? Icon(Icons.check_rounded, size: 15, color: disabled ? c.bg : c.onPrimary) : null,
     );
   }
 }
@@ -267,6 +307,12 @@ Future<void> showTrackMenu(BuildContext context, Track track, {List<MenuExtra> e
             label: l.editTags,
             onTap: () => run(() => context.pushFull(TagEditorScreen(trackId: track.id))),
           ),
+          SheetAction(
+            icon: Icons.delete_outline_rounded,
+            label: l.deleteFromDevice,
+            color: c.error,
+            onTap: () => run(() => deleteTracks(context, [track])),
+          ),
         ],
       );
     },
@@ -325,17 +371,122 @@ Future<void> showAddToPlaylist(BuildContext context, List<Track> tracks) {
                 seed: p.name,
               ),
               title: Text(p.name, style: sheet.t.title.copyWith(fontWeight: FontWeight.w700)),
-              subtitle: Text(l.songsCount(p.trackIds.length), style: sheet.t.meta),
-              onTap: () async {
+              subtitle: Text(
+                tracks.every((t) => p.trackIds.contains(t.id)) ? l.inPlaylist : l.songsCount(p.trackIds.length),
+                style: sheet.t.meta,
+              ),
+              trailing: tracks.every((t) => p.trackIds.contains(t.id))
+                  ? Icon(Icons.check_circle_rounded, color: c.text3)
+                  : null,
+              onTap: () {
                 Navigator.of(sheet).pop();
-                await context.collections.addTracks(p.id, tracks.map((t) => t.id).toList());
-                if (context.mounted) context.toast(l.addedToPlaylist(p.name));
+                addToPlaylist(context, p, tracks.map((t) => t.id).toList());
               },
             ),
         ],
       );
     },
   );
+}
+
+/// Ajout à une playlist existante : les morceaux déjà présents sont ignorés,
+/// avec la possibilité de les ajouter quand même depuis la notification.
+Future<void> addToPlaylist(BuildContext context, Playlist p, List<int> ids) async {
+  final l = context.l;
+  final collections = context.collections;
+  final root = Navigator.of(context, rootNavigator: true).context;
+  final before = p.trackIds.toSet();
+  final dupes = [
+    for (final id in ids.toSet())
+      if (before.contains(id)) id,
+  ];
+  final added = await collections.addTracks(p.id, ids);
+  if (!root.mounted) return;
+  if (dupes.isEmpty) {
+    root.toast(l.addedToPlaylist(p.name));
+    return;
+  }
+  root.toast(
+    added == 0 ? l.alreadyInPlaylist(p.name) : '${l.addedToPlaylist(p.name)} · ${l.skippedDuplicates(dupes.length)}',
+    icon: Icons.info_outline_rounded,
+    action: l.addAnyway,
+    onAction: () async {
+      await collections.addTracks(p.id, dupes, allowDuplicates: true);
+      if (root.mounted) root.toast(l.addedToPlaylist(p.name));
+    },
+  );
+}
+
+/// Suppression des fichiers du téléphone. Android 11+ : mise à la corbeille du
+/// téléphone (le système demande confirmation), annulable depuis la notification
+/// ou l'écran Corbeille pendant 30 jours. Avant Android 11 : suppression
+/// définitive, après confirmation. Renvoie true si les fichiers ont été retirés.
+Future<bool> deleteTracks(BuildContext context, List<Track> tracks, {String? title, String? body}) async {
+  final l = context.l;
+  if (tracks.isEmpty) return false;
+  final trash = await MediaStoreBridge.hasTrash();
+  if (!context.mounted) return false;
+  if (!trash) {
+    final single = tracks.length == 1;
+    final ok = await confirmAction(
+      context,
+      title: title ?? (single ? l.deleteTrackTitle : l.deleteTracksTitle(tracks.length)),
+      body: body ?? (single ? l.deleteTrackBody(tracks.first.title) : l.deleteTracksBody),
+      confirm: l.delete,
+    );
+    if (!ok || !context.mounted) return false;
+  }
+  final audio = context.audio;
+  final library = context.library;
+  final collections = context.collections;
+  final lyrics = context.read<LyricsStore>();
+  // La page d'origine peut se fermer (album supprimé) : notifications sur la racine.
+  final root = Navigator.of(context, rootNavigator: true).context;
+  final ids = {for (final t in tracks) t.id};
+  try {
+    // false : l'utilisateur a refusé la demande du système.
+    if (!await MediaStoreBridge.deleteAudio(ids.toList(), [for (final t in tracks) t.path], trash: trash)) {
+      return false;
+    }
+  } catch (e) {
+    debugPrint('Delete failed: $e');
+    if (root.mounted) root.toast(l.deleteError, icon: Icons.error_outline_rounded);
+    return false;
+  }
+  await audio.removeTracks(ids);
+  // Corbeille : favoris, playlists et paroles sont gardés pour une restauration.
+  await library.removeTracks(ids, forget: !trash);
+  if (!trash) {
+    await collections.reload();
+    await lyrics.load();
+  }
+  if (!root.mounted) return true;
+  if (trash) {
+    root.toast(
+      l.movedToTrash(ids.length),
+      icon: Icons.delete_outline_rounded,
+      action: l.undo,
+      onAction: () => restoreTracks(root, ids.toList()),
+    );
+  } else {
+    root.toast(l.deletedCount(ids.length), icon: Icons.delete_outline_rounded);
+  }
+  return true;
+}
+
+/// Sort des morceaux de la corbeille du téléphone et les remet dans la bibliothèque.
+Future<bool> restoreTracks(BuildContext context, List<int> ids) async {
+  final l = context.l;
+  final library = context.library;
+  try {
+    if (!await MediaStoreBridge.restoreAudio(ids)) return false;
+  } catch (e) {
+    debugPrint('Restore failed: $e');
+    return false;
+  }
+  await library.scan();
+  if (context.mounted) context.toast(l.restoredCount(ids.length), icon: Icons.restore_rounded);
+  return true;
 }
 
 /// Boîte de dialogue « nom de la playlist ». Le bouton reste désactivé si vide (CA-22).

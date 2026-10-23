@@ -878,7 +878,14 @@ class SheetAction extends StatelessWidget {
 OverlayEntry? _toastEntry;
 
 /// Notification en pilule, au-dessus du mini-lecteur (prototype : Toast).
-void showLyraToast(BuildContext context, String message, {IconData icon = Icons.check_rounded}) {
+/// Avec [action] (« Annuler »…), elle reste affichée plus longtemps et le bouton est touchable.
+void showLyraToast(
+  BuildContext context,
+  String message, {
+  IconData icon = Icons.check_rounded,
+  String? action,
+  VoidCallback? onAction,
+}) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
   _toastEntry?.remove();
@@ -891,6 +898,7 @@ void showLyraToast(BuildContext context, String message, {IconData icon = Icons.
       right: 24,
       bottom: MediaQuery.paddingOf(ctx).bottom + 150,
       child: IgnorePointer(
+        ignoring: action == null,
         child: Center(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
@@ -921,6 +929,26 @@ void showLyraToast(BuildContext context, String message, {IconData icon = Icons.
                         style: t.meta.copyWith(color: c.text, fontWeight: FontWeight.w600),
                       ),
                     ),
+                    if (action != null) ...[
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (_toastEntry == entry) {
+                            entry.remove();
+                            _toastEntry = null;
+                          }
+                          onAction?.call();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Text(
+                            action,
+                            style: t.meta.copyWith(color: c.primary, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -932,7 +960,7 @@ void showLyraToast(BuildContext context, String message, {IconData icon = Icons.
   );
   _toastEntry = entry;
   overlay.insert(entry);
-  Future.delayed(const Duration(milliseconds: 2200), () {
+  Future.delayed(Duration(milliseconds: action == null ? 2200 : 5000), () {
     if (_toastEntry == entry) {
       entry.remove();
       _toastEntry = null;

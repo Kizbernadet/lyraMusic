@@ -641,5 +641,165 @@
   "lcShare": "Share",
   "lcSaved": "Card saved to your gallery",
   "lcSaveDenied": "Storage access denied",
-  "lcError": "Export failed"
+  "lcError": "Export failed",
+  "deleteFromDevice": "Delete from phone",
+  "deleteTrackTitle": "Delete this song?",
+  "deleteTrackBody": "\"{name}\" will be permanently deleted from your phone.",
+  "@deleteTrackBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteTracksTitle": "{count, plural, =1{Delete 1 song?} other{Delete {count} songs?}}",
+  "@deleteTracksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteTracksBody": "These files will be permanently deleted from your phone.",
+  "deleteAlbum": "Delete album",
+  "deleteAlbumTitle": "Delete this album?",
+  "deleteAlbumBody": "{count, plural, =1{\"{name}\" and its song will be permanently deleted from your phone.} other{\"{name}\" and its {count} songs will be permanently deleted from your phone.}}",
+  "@deleteAlbumBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deletedCount": "{count, plural, =1{1 song deleted} other{{count} songs deleted}}",
+  "@deletedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteError": "The files could not be deleted.",
+  "editAlbum": "Edit album",
+  "fieldTrackTotal": "Number of tracks",
+  "multipleValues": "Multiple values",
+  "albumEditInfo": "{count, plural, =1{Changes are written to the album's song.} other{Changes are written to the album's {count} songs.}} Fields you don't touch stay as they are.",
+  "@albumEditInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "albumSaving": "Writing {done} / {total}…",
+  "@albumSaving": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "albumSaved": "Album updated",
+  "albumSavePartial": "{count, plural, =1{1 song could not be changed} other{{count} songs could not be changed}}",
+  "@albumSavePartial": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alreadyInPlaylist": "Already in {name}",
+  "@alreadyInPlaylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "skippedDuplicates": "{count, plural, =1{1 duplicate skipped} other{{count} duplicates skipped}}",
+  "@skippedDuplicates": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inPlaylist": "Already in the playlist",
+  "select": "Select",
+  "selectAll": "Select all",
+  "clearSelection": "Cancel selection",
+  "back5": "Back 5 seconds",
+  "syncSpeed": "Playback speed",
+  "syncSpeedHint": "Slow down the song to tap more precisely: times stay exact.",
+  "syncLatency": "Reaction time",
+  "syncLatencyHint": "Subtracted from each tap to make up for the delay between hearing and touching.",
+  "syncSetHere": "Set to now",
+  "syncSettings": "Sync settings",
+  "movedToTrash": "{count, plural, =1{1 song moved to the trash} other{{count} songs moved to the trash}}",
+  "@movedToTrash": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "undo": "Undo",
+  "restoredCount": "{count, plural, =1{1 song restored} other{{count} songs restored}}",
+  "@restoredCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trash": "Trash",
+  "trashSub": "Deleted songs, restorable for 30 days",
+  "trashEmptyTitle": "The trash is empty",
+  "trashEmptyBody": "Deleted songs stay here for 30 days before your phone erases them.",
+  "trashUnsupported": "The trash needs Android 11 or later. On this phone, deleting is permanent.",
+  "trashExpires": "{days, plural, =0{Erased today} =1{Erased in 1 day} other{Erased in {days} days}}",
+  "@trashExpires": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore": "Restore",
+  "restoreAll": "Restore all",
+  "emptyTrash": "Empty trash",
+  "deleteForever": "Delete permanently",
+  "emptyTrashTitle": "Empty the trash?",
+  "emptyTrashBody": "These songs will be permanently deleted. This can't be undone.",
+  "addAnyway": "Add anyway",
+  "removedFromPlaylist": "{count, plural, =1{1 song removed} other{{count} songs removed}}",
+  "@removedFromPlaylist": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncBreak": "Break",
+  "syncBreakLine": "Instrumental break",
+  "syncBreakHint": "Mark the end of the line that just ended (instrumental passage)",
+  "syncRemoveBreak": "Remove the break",
+  "syncSnap": "Snap to voice",
+  "syncSnapAll": "Snap all lines",
+  "syncSnapped": "{count, plural, =0{No line moved} =1{1 line adjusted} other{{count} lines adjusted}}",
+  "@syncSnapped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncWaveLoading": "Analysing the sound…",
+  "syncWaveHint": "Drag the waveform to move the line. A voice starting shows up as a rise."
 }

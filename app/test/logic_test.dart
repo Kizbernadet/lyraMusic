@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lyra/data/onset.dart';
 import 'package:lyra/data/lyrics.dart';
 import 'package:lyra/models/track.dart';
 import 'package:lyra/state/library.dart';
@@ -71,6 +74,39 @@ void main() {
       final l = parseLyrics('\nLigne 1\nLigne 2\n\n');
       expect(l.synced, isFalse);
       expect(l.lines.map((e) => e.text), ['Ligne 1', 'Ligne 2']);
+    });
+    test('une pause (ligne vide horodatée) est conservée', () {
+      final lines = [
+        const LyricLine(Duration(seconds: 1), 'Un'),
+        const LyricLine(Duration(seconds: 4), ''),
+        const LyricLine(Duration(seconds: 12), 'Deux'),
+      ];
+      final l = parseLyrics(toLrc(lines));
+      expect(l.synced, isTrue);
+      expect(l.lines.map((e) => e.text), ['Un', '', 'Deux']);
+      expect(l.indexAt(const Duration(seconds: 6)), 1);
+    });
+  });
+
+  group('Aimantation sur la voix', () {
+    // Silence puis une voix qui commence à 2,00 s (enveloppe toutes les 10 ms).
+    final env = Uint8List(500);
+    for (var i = 200; i < 500; i++) {
+      env[i] = 180;
+    }
+
+    test("un appui en retard est ramené au début de l'attaque", () {
+      final snapped = snapToOnset(env, const Duration(milliseconds: 2180));
+      expect(snapped, isNotNull);
+      expect((snapped!.inMilliseconds - 2000).abs(), lessThanOrEqualTo(30));
+    });
+    test('un appui un peu en avance est aussi corrigé', () {
+      final snapped = snapToOnset(env, const Duration(milliseconds: 1880));
+      expect((snapped!.inMilliseconds - 2000).abs(), lessThanOrEqualTo(30));
+    });
+    test("rien n'est déplacé sans attaque nette à proximité", () {
+      expect(snapToOnset(env, const Duration(milliseconds: 3500)), isNull);
+      expect(snapToOnset(Uint8List(500), const Duration(seconds: 2)), isNull);
     });
   });
 }

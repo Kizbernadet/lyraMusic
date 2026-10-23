@@ -2654,6 +2654,342 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Export failed'**
   String get lcError;
+
+  /// No description provided for @deleteFromDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete from phone'**
+  String get deleteFromDevice;
+
+  /// No description provided for @deleteTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this song?'**
+  String get deleteTrackTitle;
+
+  /// No description provided for @deleteTrackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be permanently deleted from your phone.'**
+  String deleteTrackBody(String name);
+
+  /// No description provided for @deleteTracksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Delete 1 song?} other{Delete {count} songs?}}'**
+  String deleteTracksTitle(int count);
+
+  /// No description provided for @deleteTracksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These files will be permanently deleted from your phone.'**
+  String get deleteTracksBody;
+
+  /// No description provided for @deleteAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete album'**
+  String get deleteAlbum;
+
+  /// No description provided for @deleteAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this album?'**
+  String get deleteAlbumTitle;
+
+  /// No description provided for @deleteAlbumBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{\"{name}\" and its song will be permanently deleted from your phone.} other{\"{name}\" and its {count} songs will be permanently deleted from your phone.}}'**
+  String deleteAlbumBody(String name, int count);
+
+  /// No description provided for @deletedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song deleted} other{{count} songs deleted}}'**
+  String deletedCount(int count);
+
+  /// No description provided for @deleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'The files could not be deleted.'**
+  String get deleteError;
+
+  /// No description provided for @editAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit album'**
+  String get editAlbum;
+
+  /// No description provided for @fieldTrackTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of tracks'**
+  String get fieldTrackTotal;
+
+  /// No description provided for @multipleValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple values'**
+  String get multipleValues;
+
+  /// No description provided for @albumEditInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Changes are written to the album\'s song.} other{Changes are written to the album\'s {count} songs.}} Fields you don\'t touch stay as they are.'**
+  String albumEditInfo(int count);
+
+  /// No description provided for @albumSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing {done} / {total}…'**
+  String albumSaving(int done, int total);
+
+  /// No description provided for @albumSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Album updated'**
+  String get albumSaved;
+
+  /// No description provided for @albumSavePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song could not be changed} other{{count} songs could not be changed}}'**
+  String albumSavePartial(int count);
+
+  /// No description provided for @alreadyInPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in {name}'**
+  String alreadyInPlaylist(String name);
+
+  /// No description provided for @skippedDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 duplicate skipped} other{{count} duplicates skipped}}'**
+  String skippedDuplicates(int count);
+
+  /// No description provided for @inPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in the playlist'**
+  String get inPlaylist;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAll;
+
+  /// No description provided for @clearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel selection'**
+  String get clearSelection;
+
+  /// No description provided for @back5.
+  ///
+  /// In en, this message translates to:
+  /// **'Back 5 seconds'**
+  String get back5;
+
+  /// No description provided for @syncSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback speed'**
+  String get syncSpeed;
+
+  /// No description provided for @syncSpeedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow down the song to tap more precisely: times stay exact.'**
+  String get syncSpeedHint;
+
+  /// No description provided for @syncLatency.
+  ///
+  /// In en, this message translates to:
+  /// **'Reaction time'**
+  String get syncLatency;
+
+  /// No description provided for @syncLatencyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtracted from each tap to make up for the delay between hearing and touching.'**
+  String get syncLatencyHint;
+
+  /// No description provided for @syncSetHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Set to now'**
+  String get syncSetHere;
+
+  /// No description provided for @syncSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync settings'**
+  String get syncSettings;
+
+  /// No description provided for @movedToTrash.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song moved to the trash} other{{count} songs moved to the trash}}'**
+  String movedToTrash(int count);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @restoredCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song restored} other{{count} songs restored}}'**
+  String restoredCount(int count);
+
+  /// No description provided for @trash.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash'**
+  String get trash;
+
+  /// No description provided for @trashSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted songs, restorable for 30 days'**
+  String get trashSub;
+
+  /// No description provided for @trashEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The trash is empty'**
+  String get trashEmptyTitle;
+
+  /// No description provided for @trashEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted songs stay here for 30 days before your phone erases them.'**
+  String get trashEmptyBody;
+
+  /// No description provided for @trashUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'The trash needs Android 11 or later. On this phone, deleting is permanent.'**
+  String get trashUnsupported;
+
+  /// No description provided for @trashExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{Erased today} =1{Erased in 1 day} other{Erased in {days} days}}'**
+  String trashExpires(int days);
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// No description provided for @restoreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore all'**
+  String get restoreAll;
+
+  /// No description provided for @emptyTrash.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty trash'**
+  String get emptyTrash;
+
+  /// No description provided for @deleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get deleteForever;
+
+  /// No description provided for @emptyTrashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty the trash?'**
+  String get emptyTrashTitle;
+
+  /// No description provided for @emptyTrashBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These songs will be permanently deleted. This can\'t be undone.'**
+  String get emptyTrashBody;
+
+  /// No description provided for @addAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get addAnyway;
+
+  /// No description provided for @removedFromPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 song removed} other{{count} songs removed}}'**
+  String removedFromPlaylist(int count);
+
+  /// No description provided for @syncBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Break'**
+  String get syncBreak;
+
+  /// No description provided for @syncBreakLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Instrumental break'**
+  String get syncBreakLine;
+
+  /// No description provided for @syncBreakHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark the end of the line that just ended (instrumental passage)'**
+  String get syncBreakHint;
+
+  /// No description provided for @syncRemoveBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the break'**
+  String get syncRemoveBreak;
+
+  /// No description provided for @syncSnap.
+  ///
+  /// In en, this message translates to:
+  /// **'Snap to voice'**
+  String get syncSnap;
+
+  /// No description provided for @syncSnapAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Snap all lines'**
+  String get syncSnapAll;
+
+  /// No description provided for @syncSnapped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No line moved} =1{1 line adjusted} other{{count} lines adjusted}}'**
+  String syncSnapped(int count);
+
+  /// No description provided for @syncWaveLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing the sound…'**
+  String get syncWaveLoading;
+
+  /// No description provided for @syncWaveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the waveform to move the line. A voice starting shows up as a rise.'**
+  String get syncWaveHint;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

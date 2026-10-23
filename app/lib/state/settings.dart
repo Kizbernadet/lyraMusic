@@ -226,6 +226,14 @@ class SettingsController extends ChangeNotifier {
   bool get workshopGuideSeen => prefs.getBool('workshopGuideSeen') ?? false;
   Future<void> setWorkshopGuideSeen() => prefs.setBool('workshopGuideSeen', true);
 
+  /// Synchronisation des paroles : temps de réaction retiré de chaque appui (ms).
+  int get syncLatencyMs => prefs.getInt('syncLatency') ?? 0;
+
+  Future<void> setSyncLatencyMs(int value) async {
+    await prefs.setInt('syncLatency', value);
+    notifyListeners();
+  }
+
   List<String> get recentSearches => prefs.getStringList('recentSearches') ?? const [];
 
   Future<void> addRecentSearch(String query) async {

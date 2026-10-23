@@ -58,6 +58,15 @@ class CollectionsController extends ChangeNotifier {
     return value;
   }
 
+  Future<void> removeFavorites(Set<int> trackIds) async {
+    for (final id in trackIds) {
+      await db.setFavorite(id, false);
+    }
+    _favorites.removeAll(trackIds);
+    favoriteIds = favoriteIds.where((id) => !trackIds.contains(id)).toList();
+    notifyListeners();
+  }
+
   // ---- Playlists ----
 
   Playlist? playlist(int id) {
@@ -69,7 +78,8 @@ class CollectionsController extends ChangeNotifier {
 
   Future<int> create(String name, {List<int> trackIds = const []}) async {
     final id = await db.createPlaylist(name.trim());
-    if (trackIds.isNotEmpty) await db.setPlaylistTracks(id, trackIds);
+    final unique = trackIds.toSet().toList();
+    if (unique.isNotEmpty) await db.setPlaylistTracks(id, unique);
     await _reload();
     return id;
   }
@@ -84,11 +94,22 @@ class CollectionsController extends ChangeNotifier {
     await _reload();
   }
 
-  Future<void> addTracks(int id, List<int> trackIds) async {
+  /// Ajoute les morceaux absents de la playlist (pas de doublon, sauf si
+  /// [allowDuplicates]). Renvoie le nombre de morceaux réellement ajoutés.
+  Future<int> addTracks(int id, List<int> trackIds, {bool allowDuplicates = false}) async {
     final p = playlist(id);
-    if (p == null) return;
-    await db.setPlaylistTracks(id, [...p.trackIds, ...trackIds]);
+    if (p == null) return 0;
+    final present = p.trackIds.toSet();
+    final added = allowDuplicates
+        ? trackIds
+        : [
+            for (final t in trackIds)
+              if (present.add(t)) t,
+          ];
+    if (added.isEmpty) return 0;
+    await db.setPlaylistTracks(id, [...p.trackIds, ...added]);
     await _reload();
+    return added.length;
   }
 
   Future<void> removeAt(int id, int index) async {
@@ -96,6 +117,14 @@ class CollectionsController extends ChangeNotifier {
     if (p == null) return;
     final ids = [...p.trackIds]..removeAt(index);
     await db.setPlaylistTracks(id, ids);
+    await _reload();
+  }
+
+  /// Retire de la playlist toutes les occurrences de ces morceaux.
+  Future<void> removeTracks(int id, Set<int> trackIds) async {
+    final p = playlist(id);
+    if (p == null) return;
+    await db.setPlaylistTracks(id, p.trackIds.where((t) => !trackIds.contains(t)).toList());
     await _reload();
   }
 
@@ -115,6 +144,9 @@ class CollectionsController extends ChangeNotifier {
     playlists = await db.playlists();
     notifyListeners();
   }
+
+  /// Morceaux supprimés du téléphone : déjà retirés de la base, on recharge.
+  Future<void> reload() => load();
 
   // ---- Historique ----
 
